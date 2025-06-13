@@ -1,0 +1,77 @@
+/* Contenedor principal que centra el formulario */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 80vh; /* Ocupa casi toda la altura de la vista */
+  background-color: #f4f7f6; /* Un fondo gris muy claro */
+}
+
+/* El formulario en sí */
+.login-form {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px; /* Ancho máximo para el formulario */
+  box-sizing: border-box;
+}
+
+.login-form h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Grupo de label + input */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Estilo para los inputs */
+.form-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff; /* Color de realce al hacer foco */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Botón de envío */
+.submit-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.submit-button:active {
+  transform: scale(0.98); /* Pequeño efecto al hacer clic */
+}

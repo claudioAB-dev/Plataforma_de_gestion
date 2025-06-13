@@ -1,68 +1,355 @@
+/* ==========================================================================
+   1. VARIABLES Y ESTILOS GLOBALES
+   ========================================================================== */
+
+/*
+ * Define la paleta de colores, tipografía y espaciados principales.
+ * Modificar estas variables afectará a todo el sitio.
+ */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Paleta de colores verdes */
+  --color-primary: #2e7d32; /* Verde oscuro principal (para nav, botones) */
+  --color-primary-dark: #1b5e20; /* Verde más oscuro para hover/active */
+  --color-primary-light: #4caf50; /* Verde más claro para acentos */
+  --color-background: #f1f8e9; /* Fondo general muy claro con tinte verde */
+  --color-surface: #ffffff; /* Fondo para tarjetas, modales, inputs */
+  --color-text-primary: #212121; /* Texto principal oscuro */
+  --color-text-secondary: #616161; /* Texto secundario/apagado */
+  --color-border: #e0e0e0; /* Bordes sutiles */
+  --color-danger: #d32f2f; /* Para acciones destructivas (eliminar) */
+  --color-danger-dark: #b71c1c; /* Hover para acciones destructivas */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Tipografía */
+  --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-base: 16px; /* 1rem */
+  --line-height-base: 1.6;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  /* Otros */
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.2s ease-in-out;
+}
+
+/*
+ * Reseteo básico y configuración del box-sizing.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+/* ==========================================================================
+   2. TIPOGRAFÍA Y UTILIDADES
+   ========================================================================== */
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0.75em;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2.25rem;
+}
+h2 {
+  font-size: 1.75rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+p {
+  margin-bottom: 1em;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1rem;
+}
+
+/* ==========================================================================
+   3. ESTILOS DE COMPONENTES
+   ========================================================================== */
+
+/* ------------------------------------------
+   Navbar (Basado en tu componente)
+   ------------------------------------------ */
+.navbar {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que el menú se ajuste en móvil */
+}
+
+.navbar-brand a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-surface);
+}
+.navbar-brand a:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.navbar-toggle {
+  display: block; /* Visible en móvil por defecto */
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  padding: 0.5rem;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.navbar-toggle .icon-bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: var(--color-surface);
+  border-radius: 1px;
+  margin: 5px 0;
+  transition: all var(--transition-speed);
+}
+
+/* Ocultar el botón hamburguesa en pantallas grandes */
+@media (min-width: 768px) {
+  .navbar-toggle {
+    display: none;
   }
-  a:hover {
-    color: #747bff;
+}
+
+/* --- Menú de navegación --- */
+.navbar-menu {
+  display: none; /* Oculto en móvil por defecto */
+  width: 100%; /* Ocupa todo el ancho en móvil */
+  margin-top: 1rem;
+}
+
+/* Clase que se añade con JS para mostrar el menú */
+.navbar-menu.is-open {
+  display: block;
+}
+
+.navbar-menu-item {
+  color: var(--color-surface);
+  padding: 0.75rem 0;
+  display: block; /* Cada item en una línea en móvil */
+  text-align: center;
+  border-top: 1px solid var(--color-primary-light);
+}
+.navbar-menu-item:first-child {
+  border-top: none;
+}
+
+.navbar-menu-item:hover {
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* Estilos de la barra de navegación para pantallas grandes */
+@media (min-width: 768px) {
+  .navbar-menu {
+    display: flex; /* Mostrar como flex en desktop */
+    width: auto;
+    margin-top: 0;
   }
-  button {
-    background-color: #f9f9f9;
+  .navbar-menu-item {
+    padding: 0.5rem 1rem;
+    border-top: none;
+    margin-left: 0.5rem;
+    border-radius: var(--border-radius);
   }
+}
+
+/* ------------------------------------------
+   Botones
+   ------------------------------------------ */
+.btn {
+  display: inline-block;
+  font-weight: 500;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  color: var(--color-primary);
+  background-color: transparent;
+  border-color: var(--color-primary);
+}
+.btn-secondary:hover {
+  color: #fff;
+  background-color: var(--color-primary);
+}
+
+.btn-danger {
+  color: #fff;
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+.btn-danger:hover {
+  background-color: var(--color-danger-dark);
+  border-color: var(--color-danger-dark);
+}
+
+/* ------------------------------------------
+   Tarjetas (Cards)
+   ------------------------------------------ */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 2rem;
+  overflow: hidden; /* Para contener bordes de hijos */
+}
+
+.card-header,
+.card-footer {
+  padding: 1rem 1.5rem;
+  background-color: #fafafa;
+  border-bottom: 1px solid var(--color-border);
+}
+.card-footer {
+  border-bottom: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ------------------------------------------
+   Formularios
+   ------------------------------------------ */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  background-clip: padding-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.form-control:focus {
+  outline: 0;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+}
+
+/* ------------------------------------------
+   Tablas de datos
+   ------------------------------------------ */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto; /* Permite scroll horizontal en móvil */
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid var(--color-border);
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid var(--color-border);
+  text-align: left;
+  font-weight: 600;
+}
+
+.table tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.table tbody tr:hover {
+  background-color: rgba(46, 125, 50, 0.05);
 }

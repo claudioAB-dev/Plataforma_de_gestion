@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Estilos para el componente Navbar
+   ========================================================================== */
+
+/*
+ * Dependencias de variables globales (colores, fuentes, etc.)
+ * Se incluyen aquí para que el componente sea autocontenido.
+ */
+:root {
+  /* Paleta de colores */
+  --color-primary: #2e7d32;
+  --color-primary-dark: #1b5e20;
+  --color-primary-light: #4caf50;
+  --color-surface: #ffffff;
+  --transition-speed: 0.2s ease-in-out;
+  --border-radius: 8px;
+}
+
+/* ------------------------------------------
+     Contenedor principal de la Navbar
+     ------------------------------------------ */
+.navbar {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor flex interno para alinear elementos */
+.navbar > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que el menú se ajuste en móvil */
+  width: 100%; /* Asegura que ocupe todo el espacio disponible */
+}
+
+/* ------------------------------------------
+     Marca y Menú Hamburguesa
+     ------------------------------------------ */
+.navbar-brand a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-surface);
+  text-decoration: none;
+  transition: opacity var(--transition-speed);
+}
+.navbar-brand a:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.navbar-toggle {
+  display: block; /* Visible en móvil por defecto */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.navbar-toggle .icon-bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: var(--color-surface);
+  border-radius: 1px;
+  margin: 5px 0;
+  transition: all var(--transition-speed);
+}
+
+/* Ocultar el botón hamburguesa en pantallas grandes */
+@media (min-width: 768px) {
+  .navbar-toggle {
+    display: none;
+  }
+}
+
+/* ------------------------------------------
+     Menú de navegación y sus items
+     ------------------------------------------ */
+.navbar-menu {
+  display: none; /* Oculto en móvil por defecto */
+  width: 100%; /* Ocupa todo el ancho en móvil */
+  margin-top: 1rem;
+}
+
+/* Clase que se añade con JS para mostrar el menú */
+.navbar-menu.is-open {
+  display: block;
+}
+
+.navbar-menu-item {
+  color: var(--color-surface);
+  padding: 0.75rem 0;
+  display: block; /* Cada item en una línea en móvil */
+  text-align: center;
+  border-top: 1px solid var(--color-primary-light);
+  text-decoration: none;
+  transition: background-color var(--transition-speed);
+}
+.navbar-menu-item:first-child {
+  border-top: none;
+}
+
+.navbar-menu-item:hover {
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* ------------------------------------------
+     Estilos de la Navbar para pantallas grandes (Desktop)
+     ------------------------------------------ */
+@media (min-width: 768px) {
+  .navbar-menu {
+    display: flex; /* Mostrar como flex en desktop */
+    width: auto;
+    margin-top: 0;
+  }
+
+  /*
+     * El div con la clase .space-x-4 contiene los enlaces.
+     * Lo convertimos en flex para que los items se alineen horizontalmente.
+     */
+  .navbar-menu .space-x-4 {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-menu-item {
+    padding: 0.5rem 1rem;
+    border-top: none;
+    margin-left: 0.5rem;
+    border-radius: var(--border-radius);
+  }
+}
