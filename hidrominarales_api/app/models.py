@@ -28,7 +28,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), unique=True, nullable=False)
     # Nunca almacenes contraseñas en texto plano
-    contrasena_hash = db.Column(db.String(255), nullable=False)
+    contrasena = db.Column(db.String(255), nullable=False)
     rol_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
 
     def __repr__(self):
@@ -36,11 +36,11 @@ class User(db.Model):
 
     def set_password(self, contrasena):
         """Crea un hash de la contraseña."""
-        self.contrasena_hash = generate_password_hash(contrasena)
+        self.contrasena = generate_password_hash(contrasena)
 
     def check_password(self, contrasena):
         """Verifica el hash de la contraseña."""
-        return check_password_hash(self.contrasena_hash, contrasena)
+        return check_password_hash(self.contrasena, contrasena)
 
     def serialize(self):
         return {

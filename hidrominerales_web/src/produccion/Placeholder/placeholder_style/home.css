@@ -1,0 +1,137 @@
+.production-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+}
+
+.header h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.oee-indicator {
+  /* Styles for the circular OEE indicator */
+}
+
+.circular-progress {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #555;
+}
+
+.oee-value {
+  font-size: 24px;
+}
+
+.sub-text {
+  font-size: 10px;
+  color: #777;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.segment {
+  width: 50%;
+  height: 100%;
+  background-color: #ccc;
+  position: absolute;
+}
+
+.segment.active {
+  background-color: #8fbc8f; /* Example active color */
+}
+
+.segment:nth-child(1) {
+  transform-origin: right center;
+  transform: rotate(120deg); /* Example rotation */
+}
+
+.segment:nth-child(2) {
+  left: 50%;
+  transform-origin: left center;
+  background-color: #f0e68c; /* Example color */
+}
+
+.segment:nth-child(3) {
+  transform-origin: right center;
+  transform: rotate(240deg); /* Example rotation */
+  background-color: #fa8072; /* Example color */
+}
+
+.production-details h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.production-details p {
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.register-pallet {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.register-pallet input {
+  margin-right: 5px;
+}
+
+.dropdown-container {
+  margin-left: 10px;
+}
+
+.dropdown-container select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+}
+
+.register-button,
+.start-stop-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.register-button {
+  background-color: #007bff;
+}
+
+.start-stop-button {
+  background-color: #dc3545;
+}

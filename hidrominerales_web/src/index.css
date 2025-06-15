@@ -4,35 +4,64 @@
 
 /*
  * Define la paleta de colores, tipografía y espaciados principales.
- * Modificar estas variables afectará a todo el sitio.
+ * Paleta moderna con gradientes y efectos visuales mejorados.
  */
 :root {
-  /* Paleta de colores verdes */
-  --color-primary: #2e7d32; /* Verde oscuro principal (para nav, botones) */
-  --color-primary-dark: #1b5e20; /* Verde más oscuro para hover/active */
-  --color-primary-light: #4caf50; /* Verde más claro para acentos */
-  --color-background: #f1f8e9; /* Fondo general muy claro con tinte verde */
-  --color-surface: #ffffff; /* Fondo para tarjetas, modales, inputs */
-  --color-text-primary: #212121; /* Texto principal oscuro */
-  --color-text-secondary: #616161; /* Texto secundario/apagado */
-  --color-border: #e0e0e0; /* Bordes sutiles */
-  --color-danger: #d32f2f; /* Para acciones destructivas (eliminar) */
-  --color-danger-dark: #b71c1c; /* Hover para acciones destructivas */
+  /* Paleta de colores verdes moderna */
+  --color-primary: #10b981; /* Verde esmeralda moderno */
+  --color-primary-dark: #047857; /* Verde más oscuro para hover */
+  --color-primary-light: #34d399; /* Verde claro para acentos */
+  --color-secondary: #06b6d4; /* Cyan complementario */
+  --color-accent: #8b5cf6; /* Púrpura para elementos especiales */
 
-  /* Tipografía */
+  /* Fondos y superficies */
+  --color-background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e293b 100%
+  ); /* Fondo oscuro elegante */
+  --color-surface: rgba(
+    255,
+    255,
+    255,
+    0.95
+  ); /* Fondo semi-transparente para tarjetas */
+  --color-surface-glass: rgba(255, 255, 255, 0.1); /* Efecto cristal */
+  --color-overlay: rgba(16, 185, 129, 0.1); /* Overlay sutil */
+
+  /* Textos */
+  --color-text-primary: #1f2937; /* Texto principal */
+  --color-text-secondary: #6b7280; /* Texto secundario */
+  --color-text-light: #ffffff; /* Texto claro */
+  --color-text-muted: #9ca3af; /* Texto apagado */
+
+  /* Bordes y efectos */
+  --color-border: #e5e7eb;
+  --color-border-focus: var(--color-primary);
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+  --color-success: #22c55e;
+
+  /* Tipografía moderna */
   --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-size-base: 16px; /* 1rem */
+  --font-family-display: "Cal Sans", "Inter", system-ui, sans-serif;
+  --font-size-base: 16px;
   --line-height-base: 1.6;
 
-  /* Otros */
-  --border-radius: 8px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --transition-speed: 0.2s ease-in-out;
+  /* Espaciados y efectos */
+  --border-radius: 12px;
+  --border-radius-lg: 20px;
+  --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --box-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --box-shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --transition-speed: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --backdrop-filter: blur(20px);
 }
 
 /*
- * Reseteo básico y configuración del box-sizing.
+ * Reseteo mejorado y configuración del box-sizing.
  */
 *,
 *::before,
@@ -51,13 +80,53 @@ body {
   font-family: var(--font-family-sans);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
-  background-color: var(--color-background);
+  background: var(--color-background);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Efectos de fondo animados */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(16, 185, 129, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(139, 92, 246, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(6, 182, 212, 0.2) 0%,
+      transparent 50%
+    );
+  z-index: -1;
+  animation: floatingBg 20s ease-in-out infinite;
+}
+
+@keyframes floatingBg {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+  }
 }
 
 /* ==========================================================================
-   2. TIPOGRAFÍA Y UTILIDADES
+   2. TIPOGRAFÍA Y UTILIDADES MEJORADAS
    ========================================================================== */
 
 h1,
@@ -67,36 +136,37 @@ h4,
 h5,
 h6 {
   margin-bottom: 0.75em;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-family: var(--font-family-display);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
 h2 {
-  font-size: 1.75rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--color-text-primary);
 }
+
 h3 {
   font-size: 1.5rem;
-}
-h4 {
-  font-size: 1.25rem;
+  color: var(--color-text-primary);
 }
 
 p {
   margin-bottom: 1em;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color var(--transition-speed);
-}
-
-a:hover {
-  color: var(--color-primary-dark);
-  text-decoration: underline;
+  color: var(--color-text-secondary);
 }
 
 .container {
@@ -108,248 +178,498 @@ a:hover {
 }
 
 /* ==========================================================================
-   3. ESTILOS DE COMPONENTES
+   3. NAVBAR MODERNA CON GLASSMORPHISM
    ========================================================================== */
 
-/* ------------------------------------------
-   Navbar (Basado en tu componente)
-   ------------------------------------------ */
 .navbar {
-  background-color: var(--color-primary);
-  color: var(--color-surface);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: var(--backdrop-filter);
+  -webkit-backdrop-filter: var(--backdrop-filter);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1rem 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all var(--transition-speed);
 }
 
 .navbar > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Permite que el menú se ajuste en móvil */
+  flex-wrap: wrap;
 }
 
 .navbar-brand a {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-surface);
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: var(--font-family-display);
+  color: var(--color-text-light);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-speed);
 }
+
 .navbar-brand a:hover {
   text-decoration: none;
-  opacity: 0.9;
+  transform: scale(1.05);
+  color: var(--color-primary-light);
 }
 
 .navbar-toggle {
-  display: block; /* Visible en móvil por defecto */
-  background: none;
-  border: none;
+  display: block;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.75rem;
+  transition: all var(--transition-speed);
+}
+
+.navbar-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .navbar-toggle .icon-bar {
   display: block;
   width: 25px;
   height: 3px;
-  background-color: var(--color-surface);
-  border-radius: 1px;
-  margin: 5px 0;
+  background-color: var(--color-text-light);
+  border-radius: 2px;
+  margin: 4px 0;
   transition: all var(--transition-speed);
 }
 
-/* Ocultar el botón hamburguesa en pantallas grandes */
 @media (min-width: 768px) {
   .navbar-toggle {
     display: none;
   }
 }
 
-/* --- Menú de navegación --- */
 .navbar-menu {
-  display: none; /* Oculto en móvil por defecto */
-  width: 100%; /* Ocupa todo el ancho en móvil */
+  display: none;
+  width: 100%;
   margin-top: 1rem;
 }
 
-/* Clase que se añade con JS para mostrar el menú */
 .navbar-menu.is-open {
   display: block;
 }
 
 .navbar-menu-item {
-  color: var(--color-surface);
-  padding: 0.75rem 0;
-  display: block; /* Cada item en una línea en móvil */
+  color: var(--color-text-light);
+  padding: 0.75rem 1rem;
+  display: block;
   text-align: center;
-  border-top: 1px solid var(--color-primary-light);
-}
-.navbar-menu-item:first-child {
-  border-top: none;
-}
-
-.navbar-menu-item:hover {
-  background-color: var(--color-primary-dark);
-  text-decoration: none;
-}
-
-/* Estilos de la barra de navegación para pantallas grandes */
-@media (min-width: 768px) {
-  .navbar-menu {
-    display: flex; /* Mostrar como flex en desktop */
-    width: auto;
-    margin-top: 0;
-  }
-  .navbar-menu-item {
-    padding: 0.5rem 1rem;
-    border-top: none;
-    margin-left: 0.5rem;
-    border-radius: var(--border-radius);
-  }
-}
-
-/* ------------------------------------------
-   Botones
-   ------------------------------------------ */
-.btn {
-  display: inline-block;
-  font-weight: 500;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  background-color: transparent;
-  border: 1px solid transparent;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
   border-radius: var(--border-radius);
+  margin: 0.25rem 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   transition: all var(--transition-speed);
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+.navbar-menu-item:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: var(--color-primary-light);
 }
 
-.btn-secondary {
-  color: var(--color-primary);
-  background-color: transparent;
-  border-color: var(--color-primary);
-}
-.btn-secondary:hover {
-  color: #fff;
-  background-color: var(--color-primary);
-}
-
-.btn-danger {
-  color: #fff;
-  background-color: var(--color-danger);
-  border-color: var(--color-danger);
-}
-.btn-danger:hover {
-  background-color: var(--color-danger-dark);
-  border-color: var(--color-danger-dark);
+@media (min-width: 768px) {
+  .navbar-menu {
+    display: flex;
+    width: auto;
+    margin-top: 0;
+    gap: 0.5rem;
+  }
+  .navbar-menu-item {
+    margin: 0;
+  }
 }
 
-/* ------------------------------------------
-   Tarjetas (Cards)
-   ------------------------------------------ */
-.card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+/* ==========================================================================
+   4. PÁGINA DE LOGIN MODERNA
+   ========================================================================== */
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  position: relative;
+}
+
+.login-card {
+  background: var(--color-surface);
+  backdrop-filter: var(--backdrop-filter);
+  -webkit-backdrop-filter: var(--backdrop-filter);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-lg);
+  padding: 3rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  overflow: hidden;
+  animation: slideUpFade 0.6s ease-out;
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-secondary),
+    var(--color-accent)
+  );
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  text-align: center;
   margin-bottom: 2rem;
-  overflow: hidden; /* Para contener bordes de hijos */
 }
 
-.card-header,
-.card-footer {
-  padding: 1rem 1.5rem;
-  background-color: #fafafa;
-  border-bottom: 1px solid var(--color-border);
-}
-.card-footer {
-  border-bottom: none;
-  border-top: 1px solid var(--color-border);
+.login-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.card-body {
-  padding: 1.5rem;
+.login-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
 }
 
-/* ------------------------------------------
-   Formularios
-   ------------------------------------------ */
+/* ==========================================================================
+   5. FORMULARIOS MODERNOS
+   ========================================================================== */
+
 .form-group {
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-control {
   display: block;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
-  background-clip: padding-box;
-  border: 1px solid var(--color-border);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 2px solid var(--color-border);
   border-radius: var(--border-radius);
-  transition: border-color var(--transition-speed),
-    box-shadow var(--transition-speed);
+  transition: all var(--transition-speed);
+  backdrop-filter: blur(10px);
 }
 
 .form-control:focus {
   outline: 0;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
 }
 
-/* ------------------------------------------
-   Tablas de datos
-   ------------------------------------------ */
-.table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto; /* Permite scroll horizontal en móvil */
-  -webkit-overflow-scrolling: touch;
+.form-control::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 
-.table {
-  width: 100%;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  border-collapse: collapse;
-}
+/* ==========================================================================
+   6. BOTONES MODERNOS CON EFECTOS
+   ========================================================================== */
 
-.table th,
-.table td {
-  padding: 0.75rem;
-  vertical-align: top;
-  border-top: 1px solid var(--color-border);
-}
-
-.table thead th {
-  vertical-align: bottom;
-  border-bottom: 2px solid var(--color-border);
-  text-align: left;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  min-height: 50px;
 }
 
-.table tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.02);
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
 }
-.table tbody tr:hover {
-  background-color: rgba(46, 125, 50, 0.05);
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  color: var(--color-primary);
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--color-primary);
+  backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+  color: white;
+  background: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--color-danger),
+    var(--color-danger-dark)
+  );
+  border-color: var(--color-danger);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+/* Botón de ancho completo para login */
+.btn-block {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   7. TARJETAS MEJORADAS
+   ========================================================================== */
+
+.card {
+  background: var(--color-surface);
+  backdrop-filter: var(--backdrop-filter);
+  -webkit-backdrop-filter: var(--backdrop-filter);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  transition: all var(--transition-speed);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-lg);
+}
+
+.card-header,
+.card-footer {
+  padding: 1.5rem 2rem;
+  background: rgba(16, 185, 129, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-footer {
+  border-bottom: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* ==========================================================================
+   8. FOOTER MODERNO
+   ========================================================================== */
+
+.footer {
+  background: rgba(15, 23, 42, 0.95);
+  color: var(--color-text-light);
+  padding: 2rem 0;
+  text-align: center;
+  backdrop-filter: var(--backdrop-filter);
+  -webkit-backdrop-filter: var(--backdrop-filter);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  color: var(--color-primary-light);
+  text-decoration: none;
+}
+
+.footer-copyright {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   9. RESPONSIVE Y UTILIDADES
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
+
+  .login-card {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .btn {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Utilidades adicionales */
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-4 {
+  margin-top: 1rem;
+}
+
+/* Animaciones adicionales */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estados de hover para interactividad */
+.interactive:hover {
+  transform: scale(1.02);
+  transition: transform var(--transition-speed);
+}
+
+/* Gradientes decorativos */
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

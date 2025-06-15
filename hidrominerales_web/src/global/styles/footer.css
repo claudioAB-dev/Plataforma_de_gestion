@@ -1,0 +1,106 @@
+/* ==========================================================================
+   Estilos para el componente Footer
+   Creado a partir de la guía de estilo de navbar.css
+   ========================================================================== */
+
+/*
+ * NOTA: Este archivo reutiliza las variables CSS (--color-primary, etc.)
+ * definidas en tu archivo principal o en navbar.css.
+ */
+
+/* ------------------------------------------
+   Contenedor principal del Footer
+   ------------------------------------------ */
+.footer {
+  /* Mismo fondo y color que el .navbar para consistencia */
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  padding: 2rem 1.5rem; /* Un poco más de padding vertical que el navbar es común en footers */
+  margin-top: auto; /* Ayuda a empujar el footer al final del viewport si el contenido es corto */
+
+  /* En lugar de sombra, un borde superior es más tradicional para un footer */
+  border-top: 2px solid var(--color-primary-light);
+}
+
+/* ------------------------------------------
+     Contenido interno del Footer (Flexbox)
+     ------------------------------------------ */
+.footer-content {
+  /* Replica el layout flex de .navbar > div */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem; /* Espacio entre elementos cuando se envuelven en pantallas medianas */
+
+  /* Buenas prácticas: centrar el contenido en un ancho máximo */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------
+     Sección de Copyright y Enlaces
+     ------------------------------------------ */
+.footer-copyright p {
+  /* Análogo al .navbar-brand, pero con menos peso visual */
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400; /* Ligeramente más delgado que el brand */
+  opacity: 0.9;
+}
+
+.footer-links {
+  /* Análogo al contenedor .space-x-4 en desktop */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre los items de enlace */
+}
+
+.footer-link-item {
+  /* Replica el estilo de .navbar-menu-item en modo desktop */
+  color: var(--color-surface);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-speed);
+}
+
+.footer-link-item:hover {
+  /* Replica el hover de .navbar-menu-item */
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* ------------------------------------------
+     Estilos responsivos para pantallas pequeñas (Móvil)
+     ------------------------------------------ */
+@media (max-width: 767px) {
+  /* La media query del navbar es (min-width: 768px),
+       así que usamos max-width: 767px para definir el comportamiento móvil sin solapamientos. */
+
+  .footer-content {
+    flex-direction: column; /* Apila los elementos verticalmente */
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .footer-copyright {
+    order: 2; /* Opcional: Mueve el copyright debajo de los enlaces en móvil */
+  }
+
+  .footer-links {
+    order: 1; /* Opcional: Mueve los enlaces a la parte superior en móvil */
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Hacemos que el hover en móvil sea menos pronunciado,
+       ya que no hay un "hover" real, solo el estado activo al tocar. */
+  .footer-link-item:hover {
+    background-color: transparent; /* Quita el fondo en hover para móvil */
+  }
+
+  .footer-link-item:active {
+    background-color: var(--color-primary-dark); /* Añade feedback al tocar */
+  }
+}

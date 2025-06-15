@@ -6,25 +6,6 @@ from .models import db, User, Rol
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
 
-# --- Rutas para Roles ---
-
-@api_bp.route('/roles', methods=['POST'])
-def create_rol():
-    data = request.get_json()
-    if not data or not 'nombre' in data:
-        return jsonify({'message': 'El campo "nombre" es requerido'}), 400
-
-    nuevo_rol = Rol(nombre=data['nombre'], permisos=data.get('permisos'))
-    try:
-        db.session.add(nuevo_rol)
-        db.session.commit()
-        return jsonify(nuevo_rol.serialize()), 201
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({'message': 'El rol ya existe'}), 409
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/roles', methods=['GET'])
 def get_roles():
@@ -69,7 +50,6 @@ def get_user(user_id):
         return jsonify({'message': 'Usuario no encontrado'}), 404
     return jsonify(user.serialize()), 200
 
-# --- Ruta de Login (Ejemplo) ---
 
 @api_bp.route('/login', methods=['POST'])
 def login():

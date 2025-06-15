@@ -1,0 +1,63 @@
+/* Contenedor principal de la página */
+.page-layout {
+  display: flex;
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  background-color: #f4f7fa; /* Color de fondo suave */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.sidebar {
+  width: 240px;
+  background-color: #ffffff; /* Fondo blanco como en la imagen */
+  border-right: 1px solid #e0e0e0; /* Borde sutil a la derecha */
+  padding: 20px 0;
+  flex-shrink: 0; /* Evita que el sidebar se encoja */
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* --- Elementos de Navegación --- */
+.nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  color: #555;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-left: 4px solid transparent; /* Borde izquierdo para el estado activo */
+}
+
+.nav-item:hover {
+  background-color: #f0f0f0; /* Un hover sutil */
+}
+
+/* Estilo para el botón activo, como "Producción" en tu imagen */
+.nav-item.active {
+  background-color: #eaf3ff; /* Fondo azul claro */
+  color: #0066cc; /* Color del texto azul */
+  font-weight: 600;
+  border-left: 4px solid #0066cc; /* Borde izquierdo azul */
+}
+
+.nav-icon {
+  margin-right: 12px;
+  font-size: 18px; /* Tamaño del emoji/icono */
+}
+
+/* --- Área de Contenido Principal --- */
+.main-content {
+  flex-grow: 1; /* Ocupa el resto del espacio */
+  padding: 24px 40px;
+  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+}
