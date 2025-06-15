@@ -1,54 +1,44 @@
 import React, { useState } from "react";
-import "./styles/login.css"; // Asegúrate de que la ruta a tu CSS es correcta
+import { useAuth } from "../context/AuthContext"; // Ajusta la ruta a tu AuthContext
+import "./styles/login.css";
 
-// 1. Definimos el tipado para las credenciales
-interface Credentials {
-  email: string;
-  password: string;
-}
+const Login: React.FC = () => {
+  // Utilizamos el hook para acceder al estado y las funciones de autenticación
+  const { login, isLoading, error } = useAuth();
 
-// 2. Definimos las props que recibirá el componente
-interface LoginProps {
-  /**
-   * Función que se ejecuta cuando el usuario envía el formulario.
-   * Recibe las credenciales como argumento.
-   */
-  onLogin: (credentials: Credentials) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  // 3. Estado para manejar los inputs del formulario
-  const [email, setEmail] = useState<string>("");
+  // Cambiamos el estado para que coincida con la API (nombre, contrasena)
+  const [nombre, setNombre] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  // 4. Handler para el envío del formulario
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevenimos que la página se recargue
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    // Validación básica
-    if (email.trim() === "" || password.trim() === "") {
-      // Es mejor evitar `alert` en React. Considera un componente de notificación.
+    if (nombre.trim() === "" || password.trim() === "") {
       console.error("Ambos campos son requeridos.");
       return;
     }
 
-    // Llamamos a la función que recibimos por props
-    onLogin({ email, password });
+    // Llamamos a la función login del contexto
+    await login({ nombre: nombre, contrasena: password });
   };
 
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
         <h2>Iniciar Sesión</h2>
+
+        {/* Mostramos un mensaje de error si existe */}
+        {error && <p className="error-message">{error}</p>}
+
         <div className="form-group">
-          <label htmlFor="email">Correo Electrónico</label>
+          <label htmlFor="nombre">Nombre de Usuario</label>
           <input
-            type="email"
-            id="email"
+            type="text"
+            id="nombre"
             className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="tucorreo@ejemplo.com"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="tu_usuario"
             required
           />
         </div>
@@ -64,8 +54,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             required
           />
         </div>
-        <button type="submit" className="submit-button">
-          Entrar
+        <button type="submit" className="submit-button" disabled={isLoading}>
+          {isLoading ? "Cargando..." : "Entrar"}
         </button>
       </form>
     </div>

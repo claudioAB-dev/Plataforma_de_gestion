@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
       <nav className="navbar">
         <div>
           <div className="navbar-brand">
-            <a href="/">Notebook</a>
+            <a href="/">Hidrominerales</a>
           </div>
 
           <button

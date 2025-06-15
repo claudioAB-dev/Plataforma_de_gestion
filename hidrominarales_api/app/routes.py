@@ -5,9 +5,6 @@ from .models import db, User, Rol
 # Define un Blueprint para organizar las rutas
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
-@api_bp.route("/", methods=["GET"])
-def index():
-    return jsonify({"message": "API de Usuarios y Roles funcionando!"})
 
 # --- Rutas para Roles ---
 
