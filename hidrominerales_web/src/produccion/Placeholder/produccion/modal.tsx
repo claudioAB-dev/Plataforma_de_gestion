@@ -1,97 +1,113 @@
-import React from "react";
-import "./Modal.css";
+import React, { useState } from "react";
+import "./modal.css"; // Nuevos estilos para el modal
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface Producto {
+  id: number;
+  nombre: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) {
-    return null;
-  }
+interface ProduccionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: any) => void;
+  productos: Producto[];
+}
 
-  const today = new Date().toISOString().split("T")[0];
+const ProduccionModal: React.FC<ProduccionModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  productos,
+}) => {
+  const [productoId, setProductoId] = useState<string>("");
+  const [cantidad, setCantidad] = useState<string>("");
+  const [merma, setMerma] = useState<string>("");
+  const [observaciones, setObservaciones] = useState<string>("");
 
-  const handleContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Aquí puedes capturar y procesar los datos del formulario.
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const data = Object.fromEntries(formData.entries());
-    console.log("Datos del formulario:", data);
-
-    alert("Cuestionario enviado. Revisa la consola para ver los datos.");
-    onClose(); // Cierra el modal después de enviar
+    if (!productoId) {
+      alert("Por favor, selecciona un producto.");
+      return;
+    }
+    onSave({
+      producto_id: parseInt(productoId),
+      cantidad_producida: parseInt(cantidad),
+      merma: parseInt(merma),
+      observaciones,
+    });
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={handleContentClick}>
+    <div className="modal-overlay">
+      <div className="modal-content">
         <div className="modal-header">
-          <h3 className="modal-title">Cuestionario de Arranque</h3>
-          <button className="modal-close-button" onClick={onClose}>
+          <h2>Registrar Reporte de Producción</h2>
+          <button onClick={onClose} className="modal-close-btn">
             &times;
           </button>
         </div>
-        <div className="modal-body">
-          <form className="questionnaire-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="codigo">Código</label>
-              <input type="text" id="codigo" name="codigo" required />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha" defaultValue={today} />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="turno">Turno</label>
-              <select id="turno" name="turno" defaultValue="primero">
-                <option value="primero">Primero</option>
-                <option value="segundo">Segundo</option>
-                <option value="tercero">Tercero</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="producto">Producto y Presentación</label>
-              <input type="text" id="producto" name="producto" required />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="horaArranque">Hora de Arranque</label>
-              <input
-                type="time"
-                id="horaArranque"
-                name="horaArranque"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="operador">Operador Engargolado</label>
-              <input type="text" id="operador" name="operador" required />
-            </div>
-
-            <div className="form-actions">
-              <button type="button" onClick={onClose} className="cancel-button">
-                Cancelar
-              </button>
-              <button type="submit" className="submit-button">
-                Guardar
-              </button>
-            </div>
-          </form>
-        </div>
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="form-group">
+            <label htmlFor="producto">Producto</label>
+            <select
+              id="producto"
+              value={productoId}
+              onChange={(e) => setProductoId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Selecciona un producto
+              </option>
+              {productos.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="cantidad">Cantidad Producida</label>
+            <input
+              id="cantidad"
+              type="number"
+              value={cantidad}
+              onChange={(e) => setCantidad(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="merma">Merma</label>
+            <input
+              id="merma"
+              type="number"
+              value={merma}
+              onChange={(e) => setMerma(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="observaciones">Observaciones</label>
+            <textarea
+              id="observaciones"
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+            />
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-save">
+              Guardar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default Modal;
+export default ProduccionModal;

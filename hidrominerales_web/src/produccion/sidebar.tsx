@@ -1,16 +1,20 @@
 import React from "react";
-import type { VentaView } from "./produccion";
+import type { Seccion } from "./produccion";
 
 interface SidebarProps {
-  activeView: VentaView;
-  setActiveView: (view: VentaView) => void;
+  seccionActual: Seccion;
+  setSeccionActual: (seccion: Seccion) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  seccionActual,
+  setSeccionActual,
+}) => {
   const navItems = [
-    { id: "produccion", label: "Producción", icon: "🔧" },
-    { id: "calidad", label: "Calidad", icon: "🥼" },
-    { id: "reportes", label: "Reportes", icon: "📄" },
+    { id: "home", label: "Producción", icon: "🏭" },
+    { id: "calidad", label: "Calidad", icon: "✔️" },
+    { id: "reportes", label: "Reportes Producción", icon: "📊" },
+    { id: "reportes2", label: "Reportes Calidad", icon: "📈" },
   ];
 
   return (
@@ -20,8 +24,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
           {navItems.map((item) => (
             <li key={item.id}>
               <button
-                className={`nav-item ${activeView === item.id ? "active" : ""}`}
-                onClick={() => setActiveView(item.id as VentaView)}
+                className={`nav-item ${
+                  seccionActual === item.id ? "active" : ""
+                }`}
+                onClick={() => setSeccionActual(item.id as Seccion)}
               >
                 <span className="nav-icon">{item.icon}</span>
                 <span className="nav-label">{item.label}</span>

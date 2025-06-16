@@ -1,34 +1,46 @@
 import React, { useState } from "react";
 import Sidebar from "./sidebar";
-
-import ProductionControl from "./Placeholder/Home";
-import ResumenVentas from "./Placeholder/Calidad";
-//import ReportesVentas from "./Placeholder/Reportes2";
-
 import "./styles/produccion.css";
 
-export type VentaView = "produccion" | "calidad" | "reportes";
+// Importa las nuevas vistas funcionales
+import ProduccionView from "./Placeholder/Home";
+import CalidadView from "./Placeholder/Calidad";
+
+// Importa los placeholders que aún no se han implementado
+import ReportesGen from "./Placeholder/Reportes_gen";
+import Reportes2 from "./Placeholder/Reportes2";
+
+export type Seccion = "home" | "calidad" | "reportes" | "reportes2";
+
+interface SidebarProps {
+  seccionActual: Seccion;
+  setSeccionActual: React.Dispatch<React.SetStateAction<Seccion>>;
+}
 
 const VentasLayout: React.FC = () => {
-  const [activeView, setActiveView] = useState<VentaView>("produccion");
+  const [seccionActual, setSeccionActual] = useState<Seccion>("home");
 
   const renderContent = () => {
-    switch (activeView) {
-      case "produccion":
-        return <ProductionControl />;
+    switch (seccionActual) {
+      case "home":
+        return <ProduccionView />; // Vista de Producción funcional
       case "calidad":
-        return <ProductionControl />;
+        return <CalidadView />; // Vista de Calidad funcional
       case "reportes":
-        return <ProductionControl />;
+        return <ReportesGen />; // Placeholder
+      case "reportes2":
+        return <Reportes2 />; // Placeholder
       default:
-        return <ResumenVentas />;
+        return <ProduccionView />;
     }
   };
 
   return (
     <div className="page-layout">
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
-
+      <Sidebar
+        seccionActual={seccionActual}
+        setSeccionActual={setSeccionActual}
+      />
       <main className="main-content">{renderContent()}</main>
     </div>
   );
