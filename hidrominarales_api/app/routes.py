@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import IntegrityError
-from .models import db, User, Rol
+from .models import db, User, Rol, Producto, ReporteProduccion, PalletTerminado, ParoLinea, Merma
 
 # Define un Blueprint para organizar las rutas
 api_bp = Blueprint('api', __name__, url_prefix='/api')
@@ -67,3 +67,117 @@ def login():
         }), 200
     
     return jsonify({'message': 'Credenciales inválidas'}), 401
+
+
+@api_bp.route('/productos', methods=['POST'])
+def create_producto():
+    data = request.get_json()
+    nuevo_producto = Producto(**data)
+    db.session.add(nuevo_producto)
+    db.session.commit()
+    return jsonify(nuevo_producto.to_dict()), 201
+
+@api_bp.route('/productos', methods=['GET'])
+def get_all_productos():
+    productos = Producto.query.filter_by(activo=True).all()
+    return jsonify([p.to_dict() for p in productos])
+
+@api_bp.route('/productos/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_producto(id):
+    producto = Producto.query.get_or_404(id)
+    if request.method == 'GET':
+        return jsonify(producto.to_dict())
+    elif request.method == 'PUT':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(producto, key, value)
+        db.session.commit()
+        return jsonify(producto.to_dict())
+    elif request.method == 'DELETE':
+        # Borrado lógico
+        producto.activo = False
+        db.session.commit()
+        return '', 204
+
+# --- Rutas para Reportes de Producción (Principal) ---
+@api_bp.route('/reportes', methods=['POST'])
+def create_reporte():
+    data = request.get_json()
+    nuevo_reporte = ReporteProduccion(**data)
+    db.session.add(nuevo_reporte)
+    db.session.commit()
+    return jsonify(nuevo_reporte.to_dict()), 201
+
+@api_bp.route('/reportes', methods=['GET'])
+def get_all_reportes():
+    reportes = ReporteProduccion.query.order_by(ReporteProduccion.fecha_produccion.desc()).all()
+    return jsonify([r.to_dict() for r in reportes])
+
+@api_bp.route('/reportes/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_reporte(id):
+    reporte = ReporteProduccion.query.get_or_404(id)
+    if request.method == 'GET':
+        # Incluir todos los detalles al solicitar un reporte específico
+        return jsonify(reporte.to_dict(include_details=True))
+    elif request.method == 'PUT':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(reporte, key, value)
+        db.session.commit()
+        return jsonify(reporte.to_dict())
+    elif request.method == 'DELETE':
+        # Borrado físico debido a la cascada
+        db.session.delete(reporte)
+        db.session.commit()
+        return '', 204
+
+# --- Rutas para Sub-recursos (Pallets, Paros, Mermas, etc.) ---
+# Se recomienda crear sub-recursos anidados bajo su reporte correspondiente.
+
+@api_bp.route('/reportes/<int:reporte_id>/pallets', methods=['POST'])
+def add_pallet_to_reporte(reporte_id):
+    reporte = ReporteProduccion.query.get_or_404(reporte_id)
+    data = request.get_json()
+    nuevo_pallet = PalletTerminado(
+        reporte_id=reporte.id,
+        **data
+    )
+    db.session.add(nuevo_pallet)
+    db.session.commit()
+    return jsonify(nuevo_pallet.to_dict()), 201
+
+@api_bp.route('/reportes/<int:reporte_id>/paros', methods=['POST'])
+def add_paro_to_reporte(reporte_id):
+    ReporteProduccion.query.get_or_404(reporte_id)
+    data = request.get_json()
+    nuevo_paro = ParoLinea(reporte_id=reporte_id, **data)
+    db.session.add(nuevo_paro)
+    db.session.commit()
+    return jsonify(nuevo_paro.to_dict()), 201
+    
+@api_bp.route('/reportes/<int:reporte_id>/mermas', methods=['POST'])
+def add_merma_to_reporte(reporte_id):
+    ReporteProduccion.query.get_or_404(reporte_id)
+    data = request.get_json()
+    nueva_merma = Merma(reporte_id=reporte_id, **data)
+    db.session.add(nueva_merma)
+    db.session.commit()
+    return jsonify(nueva_merma.to_dict()), 201
+    
+# ... y así sucesivamente para 'controles_calidad' e 'inspecciones_sello'
+# ...
+
+# Para la edición o borrado de un sub-recurso, es más simple usar su ID propio.
+@api_bp.route('/pallets/<int:id>', methods=['PUT', 'DELETE'])
+def handle_pallet(id):
+    pallet = PalletTerminado.query.get_or_404(id)
+    if request.method == 'PUT':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(pallet, key, value)
+        db.session.commit()
+        return jsonify(pallet.to_dict())
+    elif request.method == 'DELETE':
+        db.session.delete(pallet)
+        db.session.commit()
+        return '', 204

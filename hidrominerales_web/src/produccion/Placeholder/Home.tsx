@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Modal from "./produccion/Modal";
+import Modal from "./produccion/modal";
 import "./placeholder_style/home.css";
 
 const ProductionControl: React.FC = () => {
