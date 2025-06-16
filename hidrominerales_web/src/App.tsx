@@ -4,8 +4,10 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./global/navbar";
 import Login from "./login/Login";
 import VentasLayout from "./produccion/produccion";
+import AdminLayout from "./admin/AdminLayout"; // <-- 1. IMPORTAR
 
-const AdminPage: React.FC = () => <h1>Panel de Administrador (Solo Rol 1)</h1>;
+// El componente AdminPage ya no se necesita, puedes borrarlo.
+// const AdminPage: React.FC = () => <h1>Panel de Administrador (Solo Rol 1)</h1>;
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -18,7 +20,6 @@ const UnauthorizedPage: React.FC = () => {
         <Link to="/" style={{ marginRight: "1rem" }}>
           Volver al inicio
         </Link>
-        {/* El botón ahora llama a la función del contexto */}
         <button onClick={logout}>Cerrar Sesión</button>
       </div>
     </div>
@@ -53,8 +54,6 @@ const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
   return <Navigate to="/unauthorized" replace />;
 };
 
-// --- PÁGINA DE INICIO ACTUALIZADA ---
-
 const HomePage: React.FC = () => {
   const { user, logout } = useAuth();
 
@@ -65,18 +64,19 @@ const HomePage: React.FC = () => {
         Tu rol es: <strong>{user?.rol_nombre}</strong> (ID: {user?.rol_id})
       </p>
       <nav>
-        {/* Mostramos los enlaces solo si el rol del usuario coincide */}
         {user?.rol_id === 1 && (
-          <Link to="/admin" style={{ margin: "0 10px" }}>
+          <a href="/admin" style={{ margin: "0 10px" }}>
             Panel Admin
-          </Link>
+          </a>
         )}
-        {user?.rol_id === 2 && (
-          <Link to="/editor" style={{ margin: "0 10px" }}>
-            Panel Editor
-          </Link>
+        {(user?.rol_id === 2 ||
+          user?.rol_id === 1 ||
+          user?.rol_id === 4 ||
+          user?.rol_id === 5) && (
+          <a href="/produccion" style={{ margin: "0 10px" }}>
+            Producción
+          </a>
         )}
-        <a href="/produccion"> Producción</a>
       </nav>
       <br />
       <button onClick={logout}>Cerrar Sesión</button>
@@ -96,19 +96,15 @@ const AppContent: React.FC = () => {
       <Navbar />
       <main>
         <Routes>
-          {/* --- RUTAS PÚBLICAS --- */}
           <Route
             path="/login"
             element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
           />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
-
-          {/* --- RUTAS PROTEGIDAS --- */}
           <Route
             path="/"
             element={
-              // Esta ruta solo requiere estar autenticado con un rol válido (ej: 1 o 2)
-              <RoleProtectedRoute allowedRoles={[1, 2]}>
+              <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
                 <HomePage />
               </RoleProtectedRoute>
             }
@@ -117,7 +113,8 @@ const AppContent: React.FC = () => {
             path="/admin"
             element={
               <RoleProtectedRoute allowedRoles={[1]}>
-                <AdminPage />
+                {/* 2. REEMPLAZAR AdminPage CON AdminLayout */}
+                <AdminLayout />
               </RoleProtectedRoute>
             }
           />
@@ -129,8 +126,6 @@ const AppContent: React.FC = () => {
               </RoleProtectedRoute>
             }
           />
-
-          {/* --- RUTA COMODÍN --- */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -138,7 +133,6 @@ const AppContent: React.FC = () => {
   );
 };
 
-// --- COMPONENTE PRINCIPAL ---
 const App: React.FC = () => {
   return (
     <AuthProvider>
