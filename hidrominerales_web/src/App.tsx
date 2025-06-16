@@ -6,7 +6,6 @@ import Login from "./login/Login";
 import VentasLayout from "./produccion/produccion";
 
 const AdminPage: React.FC = () => <h1>Panel de Administrador (Solo Rol 1)</h1>;
-const EditorPage: React.FC = () => <h1>Panel de Editor (Solo Rol 2)</h1>;
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -77,14 +76,13 @@ const HomePage: React.FC = () => {
             Panel Editor
           </Link>
         )}
+        <a href="/produccion"> Producción</a>
       </nav>
       <br />
       <button onClick={logout}>Cerrar Sesión</button>
     </div>
   );
 };
-
-// --- CONTENIDO PRINCIPAL DE LA APP ---
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -120,15 +118,6 @@ const AppContent: React.FC = () => {
             element={
               <RoleProtectedRoute allowedRoles={[1]}>
                 <AdminPage />
-              </RoleProtectedRoute>
-            }
-          />
-          <Route
-            path="/editor"
-            element={
-              // Solo el rol 2 puede acceder aquí (lógica de permisos eliminada)
-              <RoleProtectedRoute allowedRoles={[2]}>
-                <EditorPage />
               </RoleProtectedRoute>
             }
           />

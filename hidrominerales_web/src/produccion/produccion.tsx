@@ -3,31 +3,23 @@ import Sidebar from "./sidebar";
 
 import ProductionControl from "./Placeholder/Home";
 import ResumenVentas from "./Placeholder/Calidad";
-import ReportesVentas from "./Placeholder/Reportes2";
+//import ReportesVentas from "./Placeholder/Reportes2";
 
 import "./styles/produccion.css";
 
-export type VentaView = "resumen" | "produccion" | "reportes";
+export type VentaView = "produccion" | "calidad" | "reportes";
 
 const VentasLayout: React.FC = () => {
-  const [activeView, setActiveView] = useState<VentaView>("resumen");
-
-  const productionData = {
-    initialOee: 85,
-    orderId: "OP-2025-06-15-001",
-    productName: "Agua Mineral 600ml",
-    productDetails: ["Lote: A25B4", "Línea: EM001"],
-    palletOptions: ["Pallet CHEP", "Pallet Blanco", "Pallet PECO"],
-  };
+  const [activeView, setActiveView] = useState<VentaView>("produccion");
 
   const renderContent = () => {
     switch (activeView) {
-      case "resumen":
-        return <ResumenVentas />;
       case "produccion":
-        return <ProductionControl {...productionData} />;
+        return <ProductionControl />;
+      case "calidad":
+        return <ProductionControl />;
       case "reportes":
-        return <ReportesVentas />;
+        return <ProductionControl />;
       default:
         return <ResumenVentas />;
     }

@@ -17,10 +17,6 @@
   align-items: flex-start;
 }
 
-.oee-indicator {
-  /* Styles for the circular OEE indicator */
-}
-
 .circular-progress {
   position: relative;
   width: 120px;

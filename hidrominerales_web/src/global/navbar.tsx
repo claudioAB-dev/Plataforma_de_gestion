@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
             className={`navbar-menu ${isOpen ? "is-open" : ""}`}
           >
             <div className="space-x-4">
-              <a href="#" className="navbar-menu-item">
+              <a href="/" className="navbar-menu-item">
                 Home
               </a>
               <a href="#" className="navbar-menu-item"></a>

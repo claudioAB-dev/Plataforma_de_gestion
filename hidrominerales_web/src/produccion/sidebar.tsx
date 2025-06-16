@@ -8,9 +8,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
   const navItems = [
-    { id: "resumen", label: "Producción", icon: "🔧" }, // Puedes reemplazar '📊' por <FaChartBar />
-    { id: "nueva", label: "Calidad", icon: "🥼" }, // <FaPlusCircle />
-    { id: "reportes", label: "Reportes", icon: "📄" }, // <FaFileAlt />
+    { id: "produccion", label: "Producción", icon: "🔧" },
+    { id: "calidad", label: "Calidad", icon: "🥼" },
+    { id: "reportes", label: "Reportes", icon: "📄" },
   ];
 
   return (
