@@ -2,36 +2,33 @@ import React, { useState } from "react";
 import Sidebar from "./sidebar";
 import "./styles/produccion.css";
 
-// Importa las nuevas vistas funcionales
-import ProduccionView from "./Placeholder/Home";
-import CalidadView from "./Placeholder/Calidad";
+// Importamos el dashboard de producción y el nuevo de calidad
+import Home from "./Placeholder/Home";
+import CalidadView from "./Placeholder/Calidad"; // <-- NUEVO
 
-// Importa los placeholders que aún no se han implementado
+// Placeholders restantes
 import ReportesGen from "./Placeholder/Reportes_gen";
 import Reportes2 from "./Placeholder/Reportes2";
 
 export type Seccion = "home" | "calidad" | "reportes" | "reportes2";
 
-interface SidebarProps {
-  seccionActual: Seccion;
-  setSeccionActual: React.Dispatch<React.SetStateAction<Seccion>>;
-}
-
 const VentasLayout: React.FC = () => {
   const [seccionActual, setSeccionActual] = useState<Seccion>("home");
+  const [selectedLine, setSelectedLine] = useState<number>(1);
 
   const renderContent = () => {
     switch (seccionActual) {
       case "home":
-        return <ProduccionView />; // Vista de Producción funcional
+        return <Home selectedLine={selectedLine} />;
       case "calidad":
-        return <CalidadView />; // Vista de Calidad funcional
+        // Renderizamos CalidadView y le pasamos la línea
+        return <CalidadView selectedLine={selectedLine} />;
       case "reportes":
-        return <ReportesGen />; // Placeholder
+        return <ReportesGen />;
       case "reportes2":
-        return <Reportes2 />; // Placeholder
+        return <Reportes2 />;
       default:
-        return <ProduccionView />;
+        return <Home selectedLine={selectedLine} />;
     }
   };
 
@@ -40,6 +37,8 @@ const VentasLayout: React.FC = () => {
       <Sidebar
         seccionActual={seccionActual}
         setSeccionActual={setSeccionActual}
+        selectedLine={selectedLine}
+        setSelectedLine={setSelectedLine}
       />
       <main className="main-content">{renderContent()}</main>
     </div>

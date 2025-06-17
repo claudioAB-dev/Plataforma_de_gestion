@@ -1,14 +1,19 @@
 import React from "react";
 import type { Seccion } from "./produccion";
+import "./styles/sidebar-extra.css"; // Un nuevo archivo para los estilos del selector
 
 interface SidebarProps {
   seccionActual: Seccion;
   setSeccionActual: (seccion: Seccion) => void;
+  selectedLine: number;
+  setSelectedLine: (line: number) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   seccionActual,
   setSeccionActual,
+  selectedLine,
+  setSelectedLine,
 }) => {
   const navItems = [
     { id: "home", label: "Producción", icon: "🏭" },
@@ -17,8 +22,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "reportes2", label: "Reportes Calidad", icon: "📈" },
   ];
 
+  const lineas = [1, 2, 3, 4, 5];
+
   return (
     <aside className="sidebar">
+      {/* Navegación principal de secciones */}
       <nav className="sidebar-nav">
         <ul>
           {navItems.map((item) => (
@@ -36,6 +44,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </ul>
       </nav>
+
+      {/* Selector de Líneas de Producción */}
+      <div className="line-selector">
+        <h4 className="line-selector-title">Línea de Producción</h4>
+        <div className="line-selector-buttons">
+          {lineas.map((line) => (
+            <button
+              key={line}
+              className={`line-btn ${selectedLine === line ? "active" : ""}`}
+              onClick={() => setSelectedLine(line)}
+            >
+              {line}
+            </button>
+          ))}
+        </div>
+      </div>
     </aside>
   );
 };

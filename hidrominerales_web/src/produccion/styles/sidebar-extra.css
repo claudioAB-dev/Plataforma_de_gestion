@@ -1,0 +1,41 @@
+.line-selector {
+  margin-top: auto; /* Empuja el selector hacia abajo */
+  padding: 1rem;
+  background-color: #e9ecef; /* Un color de fondo para diferenciar */
+}
+
+.line-selector-title {
+  margin: 0 0 0.75rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #495057;
+  text-transform: uppercase;
+}
+
+.line-selector-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.line-btn {
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  color: #495057;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.line-btn:hover {
+  background-color: #f1f3f5;
+}
+
+.line-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}

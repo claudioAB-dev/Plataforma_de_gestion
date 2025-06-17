@@ -1,0 +1,117 @@
+.loading-container,
+.start-production-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 2rem;
+}
+
+.start-production-container h2 {
+  font-size: 2rem;
+  color: #444;
+}
+
+.start-production-container p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.btn-start-production {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-start-production:hover {
+  background-color: #218838;
+}
+
+.dashboard-container {
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 0.5rem 0;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #666;
+}
+
+.btn-finish-production {
+  background-color: #dc3545;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-card p {
+  color: #666;
+  flex-grow: 1; /* Hace que el texto ocupe el espacio disponible */
+  margin-bottom: 1.5rem;
+}
+
+.btn-action {
+  padding: 0.75rem 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-action:hover {
+  background-color: #e2e6ea;
+}
+
+.btn-action.btn-stop {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+}
+
+.btn-action.btn-merma {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+}

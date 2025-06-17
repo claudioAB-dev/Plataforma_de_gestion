@@ -1,0 +1,63 @@
+/* Hereda muchos estilos de ProduccionDashboard.css */
+
+.dashboard-grid-quality {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quality-form {
+  margin-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1rem;
+}
+
+.quality-form h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #007bff;
+}
+
+.form-grid-3,
+.form-grid-4 {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.form-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input[type="number"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-save-quality {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+  margin-top: 1rem;
+}

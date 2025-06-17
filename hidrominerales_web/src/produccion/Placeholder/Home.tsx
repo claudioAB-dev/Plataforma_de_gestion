@@ -1,123 +1,114 @@
 import React, { useState, useEffect } from "react";
-import ProduccionModal from "../Placeholder/produccion/modal";
-import "../Placeholder/placeholder_style/ProduccionView.css"; // Reutilizamos estilos de tabla
+import "../styles/ProduccionDashboard.css"; // Un nuevo CSS para este componente
 
-// Tipos para los datos de la API
-interface Producto {
-  id: number;
-  nombre: string;
+// Simulación de una llamada a la API para ver si una línea tiene un reporte activo
+const fetchActiveReportForLine = async (line: number): Promise<any | null> => {
+  console.log(`Buscando reporte activo para la línea ${line}...`);
+  // Lógica de ejemplo: la línea 2 tiene un reporte activo, las demás no.
+  if (line === 2) {
+    return {
+      id: 7,
+      producto_nombre: "Felix Peticote 355 ml",
+      lote: "CPREFDIC 26 L160.25",
+      hora_arranque: "12:13",
+      operador: "Angel",
+    };
+  }
+  return null;
+};
+
+interface HomeProps {
+  selectedLine: number;
 }
 
-interface ReporteProduccion {
-  id: number;
-  fecha: string;
-  cantidad_producida: number;
-  merma: number;
-  observaciones: string;
-  producto_id: number;
-  producto_nombre: string;
-}
-
-const ProduccionView: React.FC = () => {
-  const [reportes, setReportes] = useState<ReporteProduccion[]>([]);
-  const [productos, setProductos] = useState<Producto[]>([]);
+const Home: React.FC<HomeProps> = ({ selectedLine }) => {
+  const [activeReport, setActiveReport] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const [reportesRes, productosRes] = await Promise.all([
-        fetch("http://127.0.0.1:5001/api/reportes/produccion"),
-        fetch("http://127.0.0.1:5001/api/productos"),
-      ]);
-      const reportesData = await reportesRes.json();
-      const productosData = await productosRes.json();
-      setReportes(reportesData);
-      setProductos(productosData);
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    setIsLoading(true);
+    fetchActiveReportForLine(selectedLine)
+      .then((report) => {
+        setActiveReport(report);
+      })
+      .finally(() => setIsLoading(false));
+  }, [selectedLine]); // Se ejecuta cada vez que cambia la línea seleccionada
 
-  const handleSaveReporte = async (
-    reporteData: Omit<ReporteProduccion, "id" | "fecha" | "producto_nombre">
-  ) => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:5001/api/reportes/produccion",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(reporteData),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Error al guardar el reporte");
-      }
-      setIsModalOpen(false);
-      fetchData(); // Recargar datos
-    } catch (error) {
-      console.error("Fallo al crear reporte:", error);
-    }
+  const handleStartProduction = () => {
+    // Aquí se abriría el modal para iniciar producción que creamos antes
+    alert(
+      `Iniciando producción en la línea ${selectedLine}. Se abriría un modal.`
+    );
+    // Simulación: creamos un reporte activo después de "iniciar"
+    setActiveReport({
+      id: Math.floor(Math.random() * 100),
+      producto_nombre: "Nuevo Producto",
+      lote: "LOTE-NUEVO-123",
+      hora_arranque: new Date().toLocaleTimeString(),
+      operador: "Usuario Actual",
+    });
   };
 
   if (isLoading) {
-    return <div>Cargando datos de producción...</div>;
+    return (
+      <div className="loading-container">
+        Cargando datos para la línea {selectedLine}...
+      </div>
+    );
   }
 
-  return (
-    <div className="produccion-view-container">
-      <div className="header-actions">
-        <h1>Reportes de Producción</h1>
-        <button onClick={() => setIsModalOpen(true)} className="btn-add">
-          + Registrar Producción
+  // Si no hay reporte activo, mostramos el botón para iniciar
+  if (!activeReport) {
+    return (
+      <div className="start-production-container">
+        <h2>Línea {selectedLine} - Inactiva</h2>
+        <p>No hay una producción activa en esta línea.</p>
+        <button
+          className="btn-start-production"
+          onClick={handleStartProduction}
+        >
+          Iniciar Reporte de Producción
         </button>
       </div>
+    );
+  }
 
-      <div className="table-responsive">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>ID Reporte</th>
-              <th>Fecha</th>
-              <th>Producto</th>
-              <th>Cantidad Producida</th>
-              <th>Merma</th>
-              <th>Observaciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportes.map((reporte) => (
-              <tr key={reporte.id}>
-                <td>{reporte.id}</td>
-                <td>{new Date(reporte.fecha).toLocaleDateString()}</td>
-                <td>{reporte.producto_nombre}</td>
-                <td>{reporte.cantidad_producida}</td>
-                <td>{reporte.merma}</td>
-                <td>{reporte.observaciones}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  // Si hay un reporte activo, mostramos el dashboard
+  return (
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <div>
+          <h1>Reporte Activo: Línea {selectedLine}</h1>
+          <p>
+            <strong>Producto:</strong> {activeReport.producto_nombre} |
+            <strong> Lote:</strong> {activeReport.lote} |
+            <strong> Operador:</strong> {activeReport.operador}
+          </p>
+        </div>
+        <button className="btn-finish-production">Finalizar Producción</button>
+      </header>
+
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <h3>Producto Terminado</h3>
+          <p>Registra los pallets conforme se completan.</p>
+          <button className="btn-action">Registrar Pallet</button>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Paros de Línea</h3>
+          <p>Inicia o finaliza un paro de la línea de producción.</p>
+          <button className="btn-action btn-stop">Iniciar Paro</button>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Merma</h3>
+          <p>Registra la merma generada por el operador o equipo.</p>
+          <button className="btn-action btn-merma">Registrar Merma</button>
+        </div>
       </div>
-
-      {isModalOpen && (
-        <ProduccionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSaveReporte}
-          productos={productos}
-        />
-      )}
     </div>
   );
 };
 
-export default ProduccionView;
+export default Home;
