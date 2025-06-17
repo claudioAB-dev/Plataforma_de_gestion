@@ -115,3 +115,20 @@
   background-color: #f8d7da;
   border-color: #dc3545;
 }
+.dashboard-grid-with-progress {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.progress-card {
+  /* Opcional: hacer que ocupe más espacio si se desea */
+  /* grid-column: span 2; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.progress-card h3 {
+  margin-bottom: 1rem;
+}

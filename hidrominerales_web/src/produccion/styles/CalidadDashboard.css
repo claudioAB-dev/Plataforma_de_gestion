@@ -1,63 +1,309 @@
 /* Hereda muchos estilos de ProduccionDashboard.css */
 
+/* Layout principal del dashboard de calidad */
 .dashboard-grid-quality {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
+@media (max-width: 1024px) {
+  .dashboard-grid-quality {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Contenedor del formulario de calidad */
 .quality-form {
-  margin-top: 1rem;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 1rem;
+  margin-top: 1.5rem;
+  border-top: 2px solid #e8f4f8;
+  padding-top: 1.5rem;
+  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* Títulos de sección en el formulario */
 .quality-form h4 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #007bff;
+  margin: 0 0 1.5rem 0;
+  color: #17a2b8;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #17a2b8;
+  padding-bottom: 0.5rem;
+  position: relative;
 }
 
+.quality-form h4::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, #17a2b8, #20c997);
+}
+
+/* Grillas de formularios */
 .form-grid-3,
 .form-grid-4 {
   display: grid;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .form-grid-3 {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-}
-.form-grid-4 {
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
+.form-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .form-grid-3,
+  .form-grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-grid-3,
+  .form-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Grupos de campos del formulario */
 .form-group {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .form-group label {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-transform: capitalize;
 }
 
+/* Inputs de número mejorados */
 .form-group input[type="number"] {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
   font-size: 1rem;
+  background-color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.form-group input[type="number"]:focus {
+  outline: none;
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-group input[type="number"]:hover {
+  border-color: #adb5bd;
+}
+
+/* Checkboxes personalizados */
 .form-group input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  background-color: white;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
-.btn-save-quality {
+.form-group input[type="checkbox"]:checked {
   background-color: #17a2b8;
   border-color: #17a2b8;
+  transform: scale(1.05);
+}
+
+.form-group input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: white;
-  margin-top: 1rem;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.form-group input[type="checkbox"]:hover {
+  border-color: #17a2b8;
+  box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);
+}
+
+.form-group input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.2);
+}
+
+/* Botón de guardar mejorado */
+.btn-save-quality {
+  background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.btn-save-quality:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  background: linear-gradient(135deg, #138496 0%, #1e7e34 100%);
+}
+
+.btn-save-quality:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+/* Indicadores de estado en los campos */
+.form-group.has-value input[type="number"] {
+  border-color: #20c997;
+  background-color: #f8fff9;
+}
+
+.form-group.has-error input[type="number"] {
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+/* Animación para los campos al cargar */
+.form-group {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.form-group:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.form-group:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cards del dashboard mejoradas */
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card h3 {
+  color: #212529;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.dashboard-card p {
+  color: #6c757d;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Botones secundarios */
+.btn-action[disabled] {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+}
+
+/* Mensajes de estado */
+.loading-container,
+.start-production-container {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.start-production-container h2 {
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.start-production-container p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Header del dashboard */
+.dashboard-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(44, 62, 80, 0.3);
+}
+
+.dashboard-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.dashboard-header strong {
+  font-weight: 600;
 }

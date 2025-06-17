@@ -1,0 +1,418 @@
+/* =================================
+   MODAL OVERLAY & CONTAINER
+   ================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =================================
+     MODAL SECTIONS
+     ================================= */
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.modal-body {
+  padding: 2rem 1.5rem;
+  background: #ffffff;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  padding: 1.25rem 1.5rem;
+}
+
+/* =================================
+     CLOSE BUTTON
+     ================================= */
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+  transform: scale(1.1);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* =================================
+     FORM STYLES
+     ================================= */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Grid layout for 2-column forms */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-grid-2:last-child {
+  margin-bottom: 0;
+}
+
+.form-grid-2 .form-group {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  color: #374151;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #fefefe;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: #d1d5db;
+}
+
+/* Disabled input styles */
+.form-group input:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.form-group input:disabled:hover {
+  border-color: #e5e7eb;
+}
+
+/* Select específico */
+.form-group select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 3rem;
+  appearance: none;
+}
+
+/* =================================
+     BUTTONS
+     ================================= */
+
+.btn-cancel,
+.btn-save {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-cancel {
+  background-color: #6b7280;
+  color: #ffffff;
+  border: 2px solid transparent;
+}
+
+.btn-cancel:hover {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: 2px solid transparent;
+}
+
+.btn-save:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-cancel:active,
+.btn-save:active {
+  transform: translateY(0);
+}
+
+/* =================================
+     RESPONSIVE DESIGN
+     ================================= */
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  /* Grid responsivo - colapsa a 1 columna en tablets */
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    width: 100%;
+    height: fit-content;
+    max-height: calc(100vh - 1rem);
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  /* Asegurar que el grid sea de 1 columna en móviles */
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* =================================
+     ACCESSIBILITY & STATES
+     ================================= */
+
+.modal-content:focus-within {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1),
+    0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Improved focus styles for keyboard navigation */
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.btn-cancel:focus-visible,
+.btn-save:focus-visible,
+.modal-close-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading state for buttons */
+.btn-save.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-save.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  border: 2px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* ... (estilos anteriores) ... */
+.predefined-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-predefined {
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-predefined:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.btn-predefined span {
+  color: #6c757d;
+  font-style: italic;
+  float: right;
+}
+
+.btn-predefined.btn-other {
+  font-weight: bold;
+  color: #007bff;
+  border-color: #007bff;
+}
+/* ... (estilos anteriores) ... */
+
+.merma-display {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.merma-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.merma-item:last-child {
+  border-bottom: none;
+}
+
+.merma-item span:first-child {
+  color: #666;
+}
+
+.merma-item span:last-child {
+  font-weight: bold;
+  color: #333;
+}
