@@ -1,117 +1,163 @@
+// hidrominerales_web/src/produccion/components/StartProductionModal.tsx
+
 import React, { useState, useEffect } from "react";
 import "../styles/Modal.css";
+
+interface Product {
+  id: number;
+  nombre: string;
+}
+
+interface User {
+  id: number;
+  nombre: string;
+}
 
 interface StartProductionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
-  linea: number;
+  onSave: () => void;
+  lineaProduccion: number;
 }
 
 const StartProductionModal: React.FC<StartProductionModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  linea,
+  lineaProduccion,
 }) => {
-  const [productos, setProductos] = useState<{ id: number; nombre: string }[]>(
-    []
-  );
-  const [users, setUsers] = useState<{ id: number; nombre: string }[]>([]);
-  const [horaInicio, setHoraInicio] = useState("");
+  const [productos, setProductos] = useState<Product[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  // Estados para cada campo del formulario
+  const [lote, setLote] = useState("");
+  const [productoId, setProductoId] = useState("");
+  const [produccionObjetivo, setProduccionObjetivo] = useState("");
+  const [operadorId, setOperadorId] = useState("");
+  const [responsableId, setResponsableId] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Cuando el modal se abre, se fija la hora de inicio
     if (isOpen) {
-      setHoraInicio(
-        new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-    }
+      // Cargar productos
+      fetch("http://127.0.0.1:5001/api/productos")
+        .then((res) => res.json())
+        .then(setProductos)
+        .catch((err) => console.error("Error fetching productos:", err));
 
-    // Simulación de fetch para llenar los selectores
-    setProductos([
-      { id: 1, nombre: "Felix Peticote 355 ml" },
-      { id: 2, nombre: "Agua Mineral 600ml" },
-      { id: 3, nombre: "Otro Producto" },
-    ]);
-    setUsers([
-      { id: 1, nombre: "Angel" },
-      { id: 2, nombre: "Guadalupe M." },
-      { id: 3, nombre: "Erick" },
-      { id: 4, nombre: "Carolina" },
-    ]);
+      // Cargar usuarios
+      fetch("http://127.0.0.1:5001/api/users")
+        .then((res) => res.json())
+        .then(setUsers)
+        .catch((err) => console.error("Error fetching users:", err));
+
+      // Resetear formulario al abrir
+      setLote("");
+      setProductoId("");
+      setProduccionObjetivo("");
+      setOperadorId("");
+      setResponsableId("");
+      setError(null);
+    }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      producto_nombre: formData.get("producto_id")
-        ? productos.find(
-            (p) => p.id === parseInt(formData.get("producto_id") as string)
-          )?.nombre
-        : "",
-      operador_engargolado: formData.get("operador_engargolado_id")
-        ? users.find(
-            (u) =>
-              u.id ===
-              parseInt(formData.get("operador_engargolado_id") as string)
-          )?.nombre
-        : "",
-      responsable_linea: formData.get("responsable_linea_id")
-        ? users.find(
-            (u) =>
-              u.id === parseInt(formData.get("responsable_linea_id") as string)
-          )?.nombre
-        : "",
-      lote: formData.get("lote"),
-      turno: formData.get("turno"),
-      hora_arranque: horaInicio,
-      linea,
+    if (
+      !lote ||
+      !productoId ||
+      !produccionObjetivo ||
+      !operadorId ||
+      !responsableId
+    ) {
+      setError("Todos los campos son obligatorios.");
+      return;
+    }
+
+    const newReportData = {
+      linea_produccion: lineaProduccion,
+      lote,
+      producto_id: parseInt(productoId),
+      produccion_objetivo: parseInt(produccionObjetivo),
+      operador_engargolado_id: parseInt(operadorId),
+      responsable_linea_id: parseInt(responsableId),
     };
-    onSave(data);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5001/api/reportes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReportData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al iniciar la producción");
+      }
+
+      onSave(); // Llama a la función del padre para refrescar y cerrar
+      onClose();
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+        console.error(err);
+      }
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content large">
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
-            <h2>Iniciar Producción en Línea {linea}</h2>
+            <h2>Iniciar Reporte en Línea {lineaProduccion}</h2>
             <button type="button" onClick={onClose} className="modal-close-btn">
               &times;
             </button>
           </div>
           <div className="modal-body">
-            <div className="form-grid-2">
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="form-grid-col-2">
               <div className="form-group">
-                <label htmlFor="turno">Turno</label>
-                <select id="turno" name="turno" required>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="hora_inicio">Hora de Inicio</label>
+                <label htmlFor="lote">Lote de Producción</label>
                 <input
                   type="text"
-                  id="hora_inicio"
-                  name="hora_inicio"
-                  value={horaInicio}
-                  disabled
+                  id="lote"
+                  value={lote}
+                  onChange={(e) => setLote(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="produccion_objetivo">
+                  Meta de Producción (uds)
+                </label>
+                <input
+                  type="number"
+                  id="produccion_objetivo"
+                  value={produccionObjetivo}
+                  onChange={(e) => setProduccionObjetivo(e.target.value)}
+                  min="1"
+                  required
                 />
               </div>
             </div>
+
             <div className="form-group">
-              <label htmlFor="producto_id">Producto y Presentación</label>
-              <select id="producto_id" name="producto_id" required>
-                <option value="">Seleccione un producto...</option>
+              <label htmlFor="producto_id">Producto</label>
+              <select
+                id="producto_id"
+                value={productoId}
+                onChange={(e) => setProductoId(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Seleccione un producto...
+                </option>
                 {productos.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.nombre}
@@ -119,40 +165,19 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                 ))}
               </select>
             </div>
-            <div className="form-group">
-              <label htmlFor="lote">Lote de Caducidad</label>
-              <input
-                type="text"
-                id="lote"
-                name="lote"
-                required
-                defaultValue="CPREFDIC 26 L160.25"
-              />
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="produccion_objetivo">
-                Producción Objetivo (botellas)
-              </label>
-              <input
-                type="number"
-                id="produccion_objetivo"
-                name="produccion_objetivo"
-                required
-                defaultValue="15000"
-              />
-            </div>
-            <div className="form-grid-2">
+            <div className="form-grid-col-2">
               <div className="form-group">
-                <label htmlFor="operador_engargolado_id">
-                  Operador de Engargolado
-                </label>
+                <label htmlFor="operador_id">Operador de Engargolado</label>
                 <select
-                  id="operador_engargolado_id"
-                  name="operador_engargolado_id"
+                  id="operador_id"
+                  value={operadorId}
+                  onChange={(e) => setOperadorId(e.target.value)}
                   required
                 >
-                  <option value="">Seleccione un operador...</option>
+                  <option value="" disabled>
+                    Seleccione un operador...
+                  </option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.nombre}
@@ -160,16 +185,18 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                   ))}
                 </select>
               </div>
+
               <div className="form-group">
-                <label htmlFor="responsable_linea_id">
-                  Responsable de Línea
-                </label>
+                <label htmlFor="responsable_id">Responsable de Línea</label>
                 <select
-                  id="responsable_linea_id"
-                  name="responsable_linea_id"
+                  id="responsable_id"
+                  value={responsableId}
+                  onChange={(e) => setResponsableId(e.target.value)}
                   required
                 >
-                  <option value="">Seleccione un responsable...</option>
+                  <option value="" disabled>
+                    Seleccione un responsable...
+                  </option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.nombre}
