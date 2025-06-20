@@ -83,6 +83,13 @@ class ReporteProduccion(db.Model):
     linea = db.Column(db.String(50))
     producto_id = db.Column(db.Integer, db.ForeignKey('productos.id'), nullable=False)
     lote = db.Column(db.String(100), nullable=False, unique=True)
+    
+    # --- COLUMNAS FALTANTES AÑADIDAS ---
+    produccion_objetivo = db.Column(db.Integer)
+    operador_engargolado_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    responsable_linea_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # ------------------------------------
+
     fecha_caducidad = db.Column(db.Date)
     hora_arranque = db.Column(db.Time)
     hora_termino = db.Column(db.Time)
@@ -91,9 +98,8 @@ class ReporteProduccion(db.Model):
     reviso_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     estado = db.Column(SQLAlchemyEnum(Enum("En Proceso", "Terminado", "Cancelado")), nullable=False, default="En Proceso")
     created_at = db.Column(db.TIMESTAMP, server_default=func.now())
-    updated_at = db.Column(db.TIMESTAMP, server_default=func.now(), onupdate=func.now())
-    created_at = db.Column(db.TIMESTAMP, server_default=func.now())
-    updated_at = db.Column(db.TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    
+    # --- NOTA: Tenías 3 columnas 'updated_at', las he reducido a una ---
     updated_at = db.Column(db.TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     # Relaciones
@@ -105,20 +111,22 @@ class ReporteProduccion(db.Model):
     inspecciones_sello = db.relationship('InspeccionSelloLateral', backref='reporte', cascade="all, delete-orphan")
     personal_asignado = db.relationship('User', secondary='reporte_personal')
 
+    # La función to_dict que te proporcioné anteriormente sigue siendo válida.
+    # Asegúrate de que tu función to_dict incluya los nuevos campos si los necesitas en el frontend.
     def to_dict(self, include_details=False):
         data = {
             'id': self.id,
             'fecha_produccion': self.fecha_produccion.isoformat() if self.fecha_produccion else None,
-            'turno': self.turno,
             'linea': self.linea,
             'producto_id': self.producto_id,
             'lote': self.lote,
+            'produccion_objetivo': self.produccion_objetivo,
             'fecha_caducidad': self.fecha_caducidad.isoformat() if self.fecha_caducidad else None,
             'hora_arranque': self.hora_arranque.strftime('%H:%M:%S') if self.hora_arranque else None,
             'hora_termino': self.hora_termino.strftime('%H:%M:%S') if self.hora_termino else None,
             'velocidad_linea_bpm': self.velocidad_linea_bpm,
-            'liberacion_linea': self.liberacion_linea,
             'operador_engargolado_id': self.operador_engargolado_id,
+            'responsable_linea_id': self.responsable_linea_id,
             'elaboro_id': self.elaboro_id,
             'reviso_id': self.reviso_id,
             'estado': self.estado,
@@ -130,9 +138,9 @@ class ReporteProduccion(db.Model):
             data['mermas'] = [m.to_dict() for m in self.mermas]
             data['controles_calidad'] = [c.to_dict() for c in self.controles_calidad]
             data['inspecciones_sello'] = [i.to_dict() for i in self.inspecciones_sello]
-            data['personal_asignado'] = [u.to_dict() for u in self.personal_asignado]
+            # 'personal_asignado' podría ser muy grande, inclúyelo con cuidado
+            # data['personal_asignado'] = [u.serialize() for u in self.personal_asignado]
         return data
-
 class PalletTerminado(db.Model):
     __tablename__ = 'pallets_terminados'
     id = db.Column(db.Integer, primary_key=True)
