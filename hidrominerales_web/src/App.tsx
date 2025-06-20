@@ -5,6 +5,7 @@ import Navbar from "./global/navbar";
 import Login from "./login/Login";
 import VentasLayout from "./produccion/produccion";
 import AdminLayout from "./admin/AdminLayout"; // <-- 1. IMPORTAR
+import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout"; // <-- 1. IMPORTAR
 
 // El componente AdminPage ya no se necesita, puedes borrarlo.
 // const AdminPage: React.FC = () => <h1>Panel de Administrador (Solo Rol 1)</h1>;
@@ -127,6 +128,14 @@ const AppContent: React.FC = () => {
             }
           />
           <Route path="*" element={<Navigate to="/" />} />
+          <Route
+            path="/gerente-produccion"
+            element={
+              <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
+                <GerenteProduccionLayout />
+              </RoleProtectedRoute>
+            }
+          />
         </Routes>
       </main>
     </div>

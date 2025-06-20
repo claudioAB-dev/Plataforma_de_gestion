@@ -83,27 +83,47 @@ def create_producto():
     return jsonify(nuevo_producto.to_dict()), 201
 
 @api_bp.route('/productos', methods=['GET'])
-def get_all_productos():
-    """Obtiene todos los productos activos."""
+def get_productos():
+    """Obtiene solo los productos activos (ideal para selectores en modales de producción)."""
     productos = Producto.query.filter_by(activo=True).all()
+    return jsonify([p.to_dict() for p in productos])
+
+@api_bp.route('/productos/all', methods=['GET'])
+def get_all_productos():
+    """Obtiene todos los productos, incluyendo activos e inactivos (para tablas de gestión)."""
+    productos = Producto.query.all()
     return jsonify([p.to_dict() for p in productos])
 
 @api_bp.route('/productos/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def handle_producto(id):
-    """Maneja un producto específico (obtener, actualizar, eliminar)."""
+    """Maneja un producto específico (obtener, actualizar, activar/desactivar)."""
     producto = Producto.query.get_or_404(id)
+    
     if request.method == 'GET':
         return jsonify(producto.to_dict())
+    
     elif request.method == 'PUT':
         data = request.get_json()
-        for key, value in data.items():
-            setattr(producto, key, value)
+        # Actualiza solo los campos que vengan en el request
+        if 'nombre' in data:
+            producto.nombre = data['nombre']
+        if 'presentacion' in data:
+            producto.presentacion = data['presentacion']
+        if 'sku' in data:
+            producto.sku = data['sku']
+        if 'activo' in data:
+            producto.activo = data['activo']
+        # Se podrían añadir más campos aquí si el modelo Producto los tuviera
+        # ej: if 'charolas_por_tarima' in data:
+        #         producto.charolas_por_tarima = data['charolas_por_tarima']
         db.session.commit()
         return jsonify(producto.to_dict())
+        
     elif request.method == 'DELETE':
-        producto.activo = False  # Borrado lógico
+        # Se usa como borrado lógico (desactivar)
+        producto.activo = False
         db.session.commit()
-        return jsonify({'message': 'Producto eliminado'}), 204
+        return jsonify({'message': 'Producto desactivado (borrado lógico)'}), 200
 
 
 # --- Rutas para Reportes de Producción ---
