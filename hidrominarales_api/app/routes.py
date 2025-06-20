@@ -139,7 +139,7 @@ def get_all_reportes():
         estado = request.args.get('estado')
 
         if linea:
-            query = query.filter_by(linea_produccion=linea)
+            query = query.filter_by(linea=linea)
         if estado:
             query = query.filter_by(estado=estado)
 
@@ -150,9 +150,6 @@ def get_all_reportes():
 
 @api_bp.route('/reportes', methods=['POST'])
 def create_reporte():
-    """
-    Crea un nuevo reporte de producción.
-    """
     data = request.get_json()
     if not data:
         return jsonify({'message': 'No se recibieron datos'}), 400
@@ -162,7 +159,8 @@ def create_reporte():
             producto_id=data.get('producto_id'),
             lote=data.get('lote'),
             produccion_objetivo=data.get('produccion_objetivo'),
-            linea_produccion=data.get('linea_produccion'),
+            # Usar 'linea' que es el campo del modelo, y obtenerlo de 'linea_produccion' del JSON
+            linea=data.get('linea_produccion'),
             operador_engargolado_id=data.get('operador_engargolado_id'),
             responsable_linea_id=data.get('responsable_linea_id'),
             hora_arranque=datetime.now().strftime('%H:%M'),
@@ -174,6 +172,7 @@ def create_reporte():
         return jsonify(nuevo_reporte.to_dict()), 201
     except Exception as e:
         db.session.rollback()
+        # Devuelve el error real para un mejor diagnóstico
         return jsonify({'message': 'Error al crear el reporte', 'error': str(e)}), 500
 
 @api_bp.route('/reportes/<int:id>', methods=['PUT'])
