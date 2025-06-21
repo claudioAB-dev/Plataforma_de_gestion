@@ -1,144 +1,102 @@
 import React, { useState } from "react";
 import "../styles/Modal.css";
 
-interface StoppageData {
-  descripcion: string;
-  duracion: number; // en minutos
-  hora_inicio: string;
-}
-
 interface LineStoppageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: StoppageData) => void;
+  onSave: () => void;
+  reporteId: number;
 }
-
-// Opciones de paros comunes
-const predefinedStoppages = [
-  { descripcion: "Comida", duracion: 30 },
-  { descripcion: "Revisión de Engargolador", duracion: 15 },
-  { descripcion: "Ajuste de Equipo", duracion: 10 },
-];
 
 const LineStoppageModal: React.FC<LineStoppageModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  reporteId,
 }) => {
-  const [view, setView] = useState<"options" | "custom">("options");
+  const [motivo, setMotivo] = useState("");
+  const [duracion, setDuracion] = useState("");
+  const [hora, setHora] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5001/api/reportes/${reporteId}/paros`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            hora_inicio: hora,
+            duracion_minutos: parseInt(duracion),
+            descripcion_motivo: motivo,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Error al registrar el paro.");
+      onSave();
+      onClose();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error desconocido");
+    }
+  };
 
   if (!isOpen) return null;
-
-  const handlePredefinedClick = (stoppage: {
-    descripcion: string;
-    duracion: number;
-  }) => {
-    onSave({
-      ...stoppage,
-      hora_inicio: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    });
-  };
-
-  const handleCustomSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onSave({
-      descripcion: formData.get("descripcion") as string,
-      duracion: parseInt(formData.get("duracion") as string),
-      hora_inicio: formData.get("hora_inicio") as string,
-    });
-  };
-
-  const resetViewAndClose = () => {
-    setView("options");
-    onClose();
-  };
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div className="modal-header">
-          <h2>Registrar Paro de Línea</h2>
-          <button
-            type="button"
-            onClick={resetViewAndClose}
-            className="modal-close-btn"
-          >
-            &times;
-          </button>
-        </div>
-
-        {view === "options" ? (
-          // Vista de opciones predefinidas
-          <div className="modal-body">
-            <h4>Seleccione una causa predefinida:</h4>
-            <div className="predefined-options">
-              {predefinedStoppages.map((stoppage) => (
-                <button
-                  key={stoppage.descripcion}
-                  className="btn-predefined"
-                  onClick={() => handlePredefinedClick(stoppage)}
-                >
-                  {stoppage.descripcion} <span>({stoppage.duracion} min)</span>
-                </button>
-              ))}
-              <button
-                className="btn-predefined btn-other"
-                onClick={() => setView("custom")}
-              >
-                Otra Causa...
-              </button>
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-header">
+            <h2>Registrar Paro de Línea</h2>
+            <button type="button" onClick={onClose} className="modal-close-btn">
+              &times;
+            </button>
           </div>
-        ) : (
-          // Vista para causa personalizada
-          <form onSubmit={handleCustomSubmit}>
-            <div className="modal-body">
-              <h4>Detalle la causa del paro:</h4>
+          <div className="modal-body">
+            <div className="form-group">
+              <label htmlFor="motivo">Motivo del Paro</label>
+              <input
+                type="text"
+                id="motivo"
+                value={motivo}
+                onChange={(e) => setMotivo(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="form-grid-2">
               <div className="form-group">
-                <label htmlFor="descripcion">Motivo del Paro</label>
+                <label htmlFor="duracion">Duración (minutos)</label>
                 <input
-                  type="text"
-                  id="descripcion"
-                  name="descripcion"
+                  type="number"
+                  id="duracion"
+                  value={duracion}
+                  onChange={(e) => setDuracion(e.target.value)}
                   required
-                  autoFocus
                 />
               </div>
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label htmlFor="hora_inicio">Hora de Inicio</label>
-                  <input
-                    type="time"
-                    id="hora_inicio"
-                    name="hora_inicio"
-                    defaultValue={new Date().toTimeString().slice(0, 5)}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="duracion">Duración (minutos)</label>
-                  <input type="number" id="duracion" name="duracion" required />
-                </div>
+              <div className="form-group">
+                <label htmlFor="hora_inicio">Hora de Inicio</label>
+                <input
+                  type="time"
+                  id="hora_inicio"
+                  value={hora}
+                  onChange={(e) => setHora(e.target.value)}
+                  required
+                />
               </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() => setView("options")}
-              >
-                Volver
-              </button>
-              <button type="submit" className="btn-save">
-                Guardar Paro
-              </button>
-            </div>
-          </form>
-        )}
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-save">
+              Guardar Paro
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

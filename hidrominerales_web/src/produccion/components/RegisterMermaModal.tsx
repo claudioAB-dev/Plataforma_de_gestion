@@ -1,42 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/Modal.css";
 
 export interface MermaData {
-  tapa_operador: number;
-  tapa_equipo: number;
-  tapa_muestreo: number;
-  botella_muestreo: number;
-  merma_botella: number;
+  "Tapa/casquillo operador": number;
+  "Tapa/casquillo equipo": number;
+  "Tapa/casquillo muestreo": number;
+  "Botella muestreo": number;
 }
 
 interface RegisterMermaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: MermaData) => void;
-  currentMerma: MermaData; // Valores actuales para pre-llenar el form
+  onSave: () => void;
+  reporteId: number;
+  currentMerma: any; // Se simplifica para este ejemplo
 }
 
 const RegisterMermaModal: React.FC<RegisterMermaModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  currentMerma,
+  reporteId,
 }) => {
-  if (!isOpen) return null;
+  const [mermaState, setMermaState] = useState<MermaData>({
+    "Tapa/casquillo operador": 0,
+    "Tapa/casquillo equipo": 0,
+    "Tapa/casquillo muestreo": 0,
+    "Botella muestreo": 0,
+  });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data: MermaData = {
-      tapa_operador: parseInt(formData.get("tapa_operador") as string) || 0,
-      tapa_equipo: parseInt(formData.get("tapa_equipo") as string) || 0,
-      tapa_muestreo: parseInt(formData.get("tapa_muestreo") as string) || 0,
-      botella_muestreo:
-        parseInt(formData.get("botella_muestreo") as string) || 0,
-      merma_botella: parseInt(formData.get("merma_botella") as string) || 0,
-    };
-    onSave(data);
+  const handleInputChange = (tipo: keyof MermaData, valor: string) => {
+    setMermaState((prev) => ({ ...prev, [tipo]: parseInt(valor) || 0 }));
   };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const requests = Object.entries(mermaState)
+      .filter(([, cantidad]) => cantidad > 0)
+      .map(([tipo_merma, cantidad]) =>
+        fetch(`http://127.0.0.1:5001/api/reportes/${reporteId}/mermas`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tipo_merma, cantidad }),
+        })
+      );
+
+    try {
+      const responses = await Promise.all(requests);
+      const hasError = responses.some((res) => !res.ok);
+      if (hasError)
+        throw new Error("Una o más mermas no se pudieron registrar.");
+
+      onSave();
+      onClose();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error desconocido");
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
@@ -52,53 +75,46 @@ const RegisterMermaModal: React.FC<RegisterMermaModalProps> = ({
             <h4>Tapa / Casquillo Generado</h4>
             <div className="form-grid-3">
               <div className="form-group">
-                <label htmlFor="tapa_operador">Por Operador</label>
+                <label>Por Operador</label>
                 <input
                   type="number"
-                  id="tapa_operador"
-                  name="tapa_operador"
-                  defaultValue={currentMerma.tapa_operador}
+                  value={mermaState["Tapa/casquillo operador"]}
+                  onChange={(e) =>
+                    handleInputChange("Tapa/casquillo operador", e.target.value)
+                  }
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="tapa_equipo">Por Equipo</label>
+                <label>Por Equipo</label>
                 <input
                   type="number"
-                  id="tapa_equipo"
-                  name="tapa_equipo"
-                  defaultValue={currentMerma.tapa_equipo}
+                  value={mermaState["Tapa/casquillo equipo"]}
+                  onChange={(e) =>
+                    handleInputChange("Tapa/casquillo equipo", e.target.value)
+                  }
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="tapa_muestreo">Por Muestreo</label>
+                <label>Por Muestreo</label>
                 <input
                   type="number"
-                  id="tapa_muestreo"
-                  name="tapa_muestreo"
-                  defaultValue={currentMerma.tapa_muestreo}
+                  value={mermaState["Tapa/casquillo muestreo"]}
+                  onChange={(e) =>
+                    handleInputChange("Tapa/casquillo muestreo", e.target.value)
+                  }
                 />
               </div>
             </div>
             <h4>Botella / Botellón</h4>
-            <div className="form-grid-2">
-              <div className="form-group">
-                <label htmlFor="botella_muestreo">Generada por Muestreo</label>
-                <input
-                  type="number"
-                  id="botella_muestreo"
-                  name="botella_muestreo"
-                  defaultValue={currentMerma.botella_muestreo}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="merma_botella">Merma de Botella</label>
-                <input
-                  type="number"
-                  id="merma_botella"
-                  name="merma_botella"
-                  defaultValue={currentMerma.merma_botella}
-                />
-              </div>
+            <div className="form-group">
+              <label>Generada por Muestreo</label>
+              <input
+                type="number"
+                value={mermaState["Botella muestreo"]}
+                onChange={(e) =>
+                  handleInputChange("Botella muestreo", e.target.value)
+                }
+              />
             </div>
           </div>
           <div className="modal-footer">

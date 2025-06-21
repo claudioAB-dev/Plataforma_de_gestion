@@ -1,5 +1,3 @@
-// hidrominerales_web/src/produccion/components/StartProductionModal.tsx
-
 import React, { useState, useEffect } from "react";
 import "../styles/Modal.css";
 
@@ -7,7 +5,6 @@ interface Product {
   id: number;
   nombre: string;
 }
-
 interface User {
   id: number;
   nombre: string;
@@ -28,31 +25,37 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
 }) => {
   const [productos, setProductos] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-
-  // Estados para cada campo del formulario
   const [lote, setLote] = useState("");
   const [productoId, setProductoId] = useState("");
+  const [turno, setTurno] = useState("");
   const [produccionObjetivo, setProduccionObjetivo] = useState("");
   const [operadorId, setOperadorId] = useState("");
   const [responsableId, setResponsableId] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Cargar productos
-      fetch("http://127.0.0.1:5001/api/productos")
-        .then((res) => res.json())
-        .then(setProductos)
-        .catch((err) => console.error("Error fetching productos:", err));
-
-      // Cargar usuarios
-      fetch("http://127.0.0.1:5001/api/users")
-        .then((res) => res.json())
-        .then(setUsers)
-        .catch((err) => console.error("Error fetching users:", err));
-
-      // Resetear formulario al abrir
+      const fetchInitialData = async () => {
+        try {
+          const [productsRes, usersRes] = await Promise.all([
+            fetch("http://127.0.0.1:5001/api/productos"),
+            fetch("http://127.0.0.1:5001/api/users"),
+          ]);
+          if (!productsRes.ok || !usersRes.ok)
+            throw new Error("Error al cargar datos iniciales");
+          const productsData = await productsRes.json();
+          const usersData = await usersRes.json();
+          setProductos(productsData);
+          setUsers(usersData);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Error desconocido");
+        }
+      };
+      fetchInitialData();
+      // Resetear estado
       setLote("");
+      setTurno("");
       setProductoId("");
       setProduccionObjetivo("");
       setOperadorId("");
@@ -64,6 +67,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
+      !turno ||
       !lote ||
       !productoId ||
       !produccionObjetivo ||
@@ -73,9 +77,12 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
       setError("Todos los campos son obligatorios.");
       return;
     }
+    setError(null);
+    setIsSubmitting(true);
 
     const newReportData = {
-      linea_produccion: lineaProduccion,
+      turno: turno,
+      linea_produccion: String(lineaProduccion),
       lote,
       producto_id: parseInt(productoId),
       produccion_objetivo: parseInt(produccionObjetivo),
@@ -94,14 +101,12 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
         const errorData = await response.json();
         throw new Error(errorData.message || "Error al iniciar la producción");
       }
-
-      onSave(); // Llama a la función del padre para refrescar y cerrar
+      onSave();
       onClose();
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-        console.error(err);
-      }
+      setError(err instanceof Error ? err.message : "Error del servidor.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -119,8 +124,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
           </div>
           <div className="modal-body">
             {error && <div className="error-message">{error}</div>}
-
-            <div className="form-grid-col-2">
+            <div className="form-grid-2">
               <div className="form-group">
                 <label htmlFor="lote">Lote de Producción</label>
                 <input
@@ -131,7 +135,22 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                   required
                 />
               </div>
-
+              <div className="form-group">
+                <label htmlFor="turno">Turno</label>
+                <select
+                  id="turno"
+                  value={turno}
+                  onChange={(e) => setTurno(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccione un turno...
+                  </option>
+                  <option value="1">Matutino</option>
+                  <option value="2">Vespertino</option>
+                  <option value="3">Nocturno</option>
+                </select>
+              </div>
               <div className="form-group">
                 <label htmlFor="produccion_objetivo">
                   Meta de Producción (uds)
@@ -146,7 +165,6 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                 />
               </div>
             </div>
-
             <div className="form-group">
               <label htmlFor="producto_id">Producto</label>
               <select
@@ -165,8 +183,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                 ))}
               </select>
             </div>
-
-            <div className="form-grid-col-2">
+            <div className="form-grid-2">
               <div className="form-group">
                 <label htmlFor="operador_id">Operador de Engargolado</label>
                 <select
@@ -185,7 +202,6 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
                   ))}
                 </select>
               </div>
-
               <div className="form-group">
                 <label htmlFor="responsable_id">Responsable de Línea</label>
                 <select
@@ -207,11 +223,16 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn-save">
-              Iniciar Producción
+            <button type="submit" className="btn-save" disabled={isSubmitting}>
+              {isSubmitting ? "Guardando..." : "Iniciar Producción"}
             </button>
           </div>
         </form>

@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import Sidebar from "./sidebar";
-import "./styles/produccion.css";
-
-// Importamos el dashboard de producción y el nuevo de calidad
 import Home from "./Placeholder/Home";
-import CalidadView from "./Placeholder/Calidad"; // <-- NUEVO
-
-// Placeholders restantes
+import CalidadView from "./Placeholder/Calidad";
 import ReportesGen from "./Placeholder/Reportes_gen";
 import Reportes2 from "./Placeholder/Reportes2";
+import "./styles/produccion.css";
 
 export type Seccion = "home" | "calidad" | "reportes" | "reportes2";
 
-const VentasLayout: React.FC = () => {
+const ProduccionLayout: React.FC = () => {
   const [seccionActual, setSeccionActual] = useState<Seccion>("home");
   const [selectedLine, setSelectedLine] = useState<number>(1);
 
@@ -21,7 +17,6 @@ const VentasLayout: React.FC = () => {
       case "home":
         return <Home selectedLine={selectedLine} />;
       case "calidad":
-        // Renderizamos CalidadView y le pasamos la línea
         return <CalidadView selectedLine={selectedLine} />;
       case "reportes":
         return <ReportesGen />;
@@ -45,4 +40,4 @@ const VentasLayout: React.FC = () => {
   );
 };
 
-export default VentasLayout;
+export default ProduccionLayout;
