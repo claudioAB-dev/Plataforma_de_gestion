@@ -1,129 +1,169 @@
-Plataforma de Gestión - Hidrominerales
-Este repositorio contiene el código fuente para la Plataforma de Gestión de Hidrominerales, una aplicación web completa diseñada para supervisar y gestionar los procesos de producción de la planta. La plataforma se divide en un backend robusto basado en Flask y un frontend moderno y reactivo construido con React y TypeScript.
+# 💧 Plataforma de Gestión - Hidrominerales
 
-🌟 Características Principales
+Este repositorio contiene el código fuente para la **Plataforma de Gestión de Hidrominerales**, una aplicación web integral diseñada para supervisar y gestionar los procesos de producción de la planta.
+
+Está dividida en un backend robusto basado en **Flask** y un frontend moderno construido con **React** y **TypeScript**.
+
+---
+
+## 🌟 Características Principales
+
 La plataforma ofrece una gama de funcionalidades adaptadas a diferentes roles dentro de la empresa:
 
-Gestión de Autenticación y Roles:
-Sistema de inicio de sesión seguro.
-Acceso diferenciado basado en roles de usuario (Administrador, Gerente de Producción, Operador de Producción, Calidad, etc.).
-Panel de Administración (/admin):
-Gestión de Usuarios: Permite ver, crear, editar y eliminar usuarios del sistema.
-Gestión de Roles: Interfaz para la futura administración de permisos y roles.
-Panel del Gerente de Producción (/gerente-produccion):
-Gestión de Productos: Permite crear nuevos productos y activar o desactivar los existentes en el sistema.
-Módulo de Producción (/produccion):
-Dashboard por Línea: Visualización en tiempo real del estado de cada una de las 5 líneas de producción.
-Inicio de Reportes: Creación de nuevos reportes de producción, especificando turno, lote, producto y personal.
-Seguimiento de Progreso: Gráfico de avance que compara la producción actual con la meta establecida.
-Registro de Pallets: Modal para registrar pallets de producto terminado, calculando automáticamente el siguiente número de pallet.
-Registro de Paros de Línea: Interfaz para documentar detenciones en la producción, especificando motivo, duración y hora.
-Registro de Merma: Formulario detallado para registrar desperdicios de tapas y botellas por diferentes causas (operador, equipo, muestreo).
-Módulo de Calidad (/calidad):
-Formularios para el registro de controles de calidad durante el proceso de producción activa en una línea específica.
-🛠️ Tecnologías Utilizadas
-La plataforma está construida con un stack de tecnologías moderno y eficiente:
+### 🔐 Gestión de Autenticación y Roles
 
-Backend (API)
-Framework: Python con Flask.
-ORM: Flask-SQLAlchemy para la interacción con la base de datos.
-API: Creación de una API RESTful para la comunicación con el frontend.
-CORS: Flask-Cors para permitir peticiones desde el cliente web.
-Servidor: El backend se ejecuta sobre un servidor de desarrollo Werkzeug, iniciado con run.py.
-Frontend (Web)
-Librería: React 19 con TypeScript.
-Bundler: Vite para un desarrollo y compilación ultra rápidos.
-Routing: react-router-dom para la navegación y protección de rutas.
-Estado Global: React Context API para la gestión de la autenticación del usuario (AuthContext).
-Estilos: CSS plano con una arquitectura modular para los estilos de cada componente.
-📂 Estructura del Proyecto
-El proyecto es un monorepo con una clara separación entre el backend y el frontend:
+- Sistema de inicio de sesión seguro.
+- Acceso diferenciado basado en roles de usuario (Administrador, Gerente de Producción, Operador de Producción, Calidad, etc.).
 
+### 🛠️ Panel de Administración (`/admin`)
+
+- **Gestión de Usuarios**: Ver, crear, editar y eliminar usuarios del sistema.
+- **Gestión de Roles**: Interfaz para la futura administración de permisos y roles.
+
+### 📈 Panel del Gerente de Producción (`/gerente-produccion`)
+
+- **Gestión de Productos**: Crear y activar/desactivar productos.
+
+### ⚙️ Módulo de Producción (`/produccion`)
+
+- **Dashboard por Línea**: Visualización en tiempo real de cada línea de producción.
+- **Inicio de Reportes**: Crear nuevos reportes con turno, lote, producto y personal.
+- **Seguimiento de Progreso**: Gráfico comparativo de producción vs meta.
+- **Registro de Pallets**: Cálculo automático del siguiente número de pallet.
+- **Registro de Paros de Línea**: Documentar detenciones con motivo, duración y hora.
+- **Registro de Merma**: Formulario para registrar desperdicios por causa.
+
+### 🧪 Módulo de Calidad (`/calidad`)
+
+- Formularios para registrar controles de calidad durante el proceso activo.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+### 🔙 Backend (API)
+
+- **Framework**: Python con Flask
+- **ORM**: Flask-SQLAlchemy
+- **API RESTful**
+- **CORS**: Flask-Cors
+- **Servidor**: Werkzeug (usando `run.py`)
+
+### 🌐 Frontend (Web)
+
+- **Librería**: React 19 + TypeScript
+- **Bundler**: Vite
+- **Routing**: `react-router-dom`
+- **Estado Global**: React Context API
+- **Estilos**: CSS modular
+
+---
+
+## 📂 Estructura del Proyecto
+
+```plaintext
 plataforma_de_gestion/
-├── hidrominarales_api/ # Contenedor del backend en Flask
-│ ├── app/
-│ │ ├── **init**.py
-│ │ ├── app.py # Factory de la aplicación Flask
-│ │ ├── models.py # Modelos de la base de datos (SQLAlchemy)
-│ │ └── routes.py # Definición de las rutas de la API
-│ ├── run.py # Script para iniciar el servidor de desarrollo
-│ └── .env.example # (Sugerido) Ejemplo de variables de entorno
+├── hidrominerales_api/         # Backend en Flask
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── app.py              # Factory Flask
+│   │   ├── models.py           # Modelos SQLAlchemy
+│   │   └── routes.py           # Rutas de la API
+│   ├── run.py                  # Servidor de desarrollo
+│   └── .env.example            # Ejemplo de variables de entorno
 │
-└── hidrominerales_web/ # Contenedor del frontend en React
-├── public/
-├── src/
-│ ├── admin/ # Componentes y vistas para el rol de Administrador
-│ ├── context/ # Contexto de autenticación global
-│ ├── gerente_produccion/ # Componentes para el rol de Gerente de Producción
-│ ├── global/ # Componentes globales (Navbar, Footer)
-│ ├── login/ # Componente de la página de inicio de sesión
-│ ├── produccion/ # Componentes y vistas para los roles de Producción/Calidad
-│ ├── App.tsx # Componente raíz y configuración de rutas
-│ ├── main.tsx # Punto de entrada de la aplicación React
-│ └── index.css # Estilos globales
-├── .gitignore
-├── package.json # Dependencias y scripts del frontend
-└── vite.config.ts # Configuración de Vite
-🚀 Instalación y Puesta en Marcha
-Sigue estos pasos para configurar y ejecutar el proyecto en un entorno de desarrollo local.
+└── hidrominerales_web/         # Frontend en React
+    ├── public/
+    ├── src/
+    │   ├── admin/
+    │   ├── context/
+    │   ├── gerente_produccion/
+    │   ├── global/
+    │   ├── login/
+    │   ├── produccion/
+    │   ├── App.tsx
+    │   ├── main.tsx
+    │   └── index.css
+    ├── .gitignore
+    ├── package.json
+    └── vite.config.ts
+```
 
-Pre-requisitos
-Node.js (v18 o superior) y npm
-Python (v3.8 o superior) y pip
-Un gestor de bases de datos compatible con SQLAlchemy (ej. PostgreSQL, MySQL, SQLite).
+---
 
-1. Configuración del Backend (hidrominarales_api)
-   Navega al directorio del backend:
+## 🚀 Instalación y Puesta en Marcha
 
-Bash
+### 📋 Pre-requisitos
 
-cd hidrominarales_api
-Crea y activa un entorno virtual:
+- Node.js (v18+)
+- Python (v3.8+)
+- pip
+- Base de datos compatible con SQLAlchemy (PostgreSQL, MySQL o SQLite)
 
-Bash
+---
 
+### ⚙️ 1. Configuración del Backend (`hidrominerales_api`)
+
+```bash
+cd hidrominerales_api
 python -m venv venv
-source venv/bin/activate # En Windows: venv\Scripts\activate
-Instala las dependencias de Python:
-Nota: Se asume la existencia de un archivo requirements.txt que puedes generar con pip freeze > requirements.txt.
+# Linux/macOS:
+source venv/bin/activate
+# Windows:
+venv\Scripts\activate
+```
 
-Bash
+Instala dependencias:
 
+```bash
 pip install Flask Flask-SQLAlchemy Flask-Cors python-dotenv Werkzeug
-Configura las variables de entorno:
-Crea un archivo .env en la raíz de hidrominarales_api/ y define la URI de tu base de datos:
+```
 
+Configura variables de entorno (`.env`):
+
+```env
 DATABASE_URI="postgresql://user:password@host:port/database"
+```
+
 Crea las tablas en la base de datos:
-Inicia un shell de Python, importa db y create_all:
 
-Python
-
+```python
 from app.app import create_app
 from app.models import db
+
 app = create_app()
 with app.app_context():
-db.create_all()
-Inicia el servidor del backend:
-El servidor se ejecutará en http://127.0.0.1:5001.
+    db.create_all()
+```
 
-Bash
+Inicia el servidor:
 
-python run.py 2. Configuración del Frontend (hidrominarales_web)
-Abre una nueva terminal y navega al directorio del frontend:
+```bash
+python run.py
+```
 
-Bash
+El backend estará disponible en: [http://127.0.0.1:5001](http://127.0.0.1:5001)
 
-cd hidrominarales_web
-Instala las dependencias de Node.js:
+---
 
-Bash
+### 🌐 2. Configuración del Frontend (`hidrominerales_web`)
 
+```bash
+cd hidrominerales_web
 npm install
-Inicia el servidor de desarrollo del frontend:
-La aplicación estará disponible en http://localhost:5173 (o el puerto que Vite asigne).
-
-Bash
-
 npm run dev
-¡Y listo! Ahora puedes abrir tu navegador, acceder a la URL del frontend y empezar a interactuar con la Plataforma de Gestión de Hidrominerales.
+```
+
+La aplicación se ejecutará en: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## ✅ ¡Listo para Usar!
+
+Abre tu navegador y accede a la URL del frontend para comenzar a usar la Plataforma de Gestión de Hidrominerales.
+
+---
+
+## 📬 Contribuciones
+
+Las contribuciones son bienvenidas. Si deseas mejorar alguna funcionalidad o corregir errores, ¡no dudes en hacer un pull request o abrir un issue!

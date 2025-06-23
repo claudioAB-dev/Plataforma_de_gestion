@@ -6,9 +6,7 @@ import Login from "./login/Login";
 import VentasLayout from "./produccion/produccion";
 import AdminLayout from "./admin/AdminLayout"; // <-- 1. IMPORTAR
 import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout"; // <-- 1. IMPORTAR
-
-// El componente AdminPage ya no se necesita, puedes borrarlo.
-// const AdminPage: React.FC = () => <h1>Panel de Administrador (Solo Rol 1)</h1>;
+import ErrorBoundary from "./ErrorBoundary";
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -93,52 +91,56 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div>
-      <Navbar />
-      <main>
-        <Routes>
-          <Route
-            path="/login"
-            element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
-          />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          <Route
-            path="/"
-            element={
-              <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
-                <HomePage />
-              </RoleProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <RoleProtectedRoute allowedRoles={[1]}>
-                {/* 2. REEMPLAZAR AdminPage CON AdminLayout */}
-                <AdminLayout />
-              </RoleProtectedRoute>
-            }
-          />
-          <Route
-            path="/produccion"
-            element={
-              <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
-                <VentasLayout />
-              </RoleProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-          <Route
-            path="/gerente-produccion"
-            element={
-              <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
-                <GerenteProduccionLayout />
-              </RoleProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
-    </div>
+    <ErrorBoundary>
+      <div>
+        <Navbar />
+        <main>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                isAuthenticated ? <Navigate to="/" replace /> : <Login />
+              }
+            />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route
+              path="/"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
+                  <HomePage />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RoleProtectedRoute allowedRoles={[1]}>
+                  {/* 2. REEMPLAZAR AdminPage CON AdminLayout */}
+                  <AdminLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/produccion"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
+                  <VentasLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+            <Route
+              path="/gerente-produccion"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
+                  <GerenteProduccionLayout />
+                </RoleProtectedRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 };
 

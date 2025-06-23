@@ -122,7 +122,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     );
   }
 
-  const totalCharolas = activeReport.pallets.reduce(
+  const totalCharolas = (activeReport.pallets || []).reduce(
     (sum, p) => sum + p.cantidad_charolas,
     0
   );
@@ -135,7 +135,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
         onClose={() => setShowPalletModal(false)}
         onSave={handleModalSave}
         reporteId={activeReport.id}
-        nextPalletNumber={activeReport.pallets.length + 1}
+        nextPalletNumber={(activeReport.pallets || []).length + 1}
       />
       <LineStoppageModal
         isOpen={showStoppageModal}

@@ -48,9 +48,10 @@ def get_all_reportes():
                 # Esto maneja el caso de que se envíe un estado inválido (ej. ?estado=Desconocido)
                 return jsonify({'message': f"El valor para 'estado' ('{estado_str}') no es válido."}), 400
         reportes = query.order_by(ReporteProduccion.id.desc()).all()
-        return jsonify([reporte.to_dict() for reporte in reportes]), 200
+        return jsonify([reporte.to_dict(include_details=True) for reporte in reportes]), 200
     except Exception as e:
         return jsonify({'message': 'Error al obtener los reportes', 'error': str(e)}), 500
+
 
 @api_bp.route('/reportes', methods=['POST'])
 def create_reporte():
