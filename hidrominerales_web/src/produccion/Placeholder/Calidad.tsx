@@ -1,26 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/ProduccionDashboard.css"; // Reutilizamos estilos del dashboard
 import "../styles/CalidadDashboard.css"; // Estilos específicos para calidad
 
-// La misma función simulada que usamos en Home.tsx
-const fetchActiveReportForLine = async (line: number): Promise<any | null> => {
-  console.log(`(Calidad) Buscando reporte activo para la línea ${line}...`);
-  if (line === 2) {
-    return {
-      id: 7,
-      producto_nombre: "Felix Peticote 355 ml",
-      lote: "CPREFDIC 26 L160.25",
-    };
-  }
-  return null;
-};
+// --- INTERFACES PARA LOS DATOS DE LA API ---
+interface Producto {
+  id: number;
+  nombre: string;
+}
 
-// Componente del formulario, basado en el reporte de calidad en proceso
+interface ReporteProduccion {
+  id: number;
+  lote: string;
+  producto: Producto;
+  // No necesitamos todos los detalles, solo los relevantes para la vista
+}
+
+// --- COMPONENTE DEL FORMULARIO DE CALIDAD (sin cambios en su lógica interna) ---
+// Este componente se activará cuando exista un reporte de producción activo.
 const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí se haría un POST a /api/reportes/{reporteId}/controles_calidad
-    alert(`Guardando medición de calidad para el reporte ${reporteId}`);
+    // En el futuro, aquí se haría un POST a un endpoint como:
+    // /api/reportes/{reporteId}/controles_calidad
+    alert(
+      `Guardando medición de calidad para el reporte ID: ${reporteId}. (Endpoint no implementado aún)`
+    );
     (e.target as HTMLFormElement).reset();
   };
 
@@ -28,7 +32,6 @@ const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
     <form className="quality-form" onSubmit={handleSubmit}>
       <h4>Características Organolépticas</h4>
       <div className="form-grid-3">
-        {/* Estos serían checkboxes en la vida real */}
         <div className="form-group">
           <label>Olor OK</label>
           <input type="checkbox" />
@@ -44,7 +47,6 @@ const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
       </div>
 
       <h4>Mediciones de Proceso</h4>
-      {/* Basado en la tabla "PRODUCTO EN PROCESO" del reporte */}
       <div className="form-grid-4">
         <div className="form-group">
           <label>TQ 1</label>
@@ -87,22 +89,44 @@ const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
   );
 };
 
+// --- COMPONENTE PRINCIPAL DE LA VISTA DE CALIDAD ---
 interface CalidadViewProps {
   selectedLine: number;
 }
 
 const CalidadView: React.FC<CalidadViewProps> = ({ selectedLine }) => {
-  const [activeReport, setActiveReport] = useState<any | null>(null);
+  const [activeReport, setActiveReport] = useState<ReporteProduccion | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  // Hook para obtener el reporte activo, similar a Home.tsx
+  const fetchActiveReportForLine = useCallback(async (line: number) => {
     setIsLoading(true);
-    fetchActiveReportForLine(selectedLine)
-      .then((report) => {
-        setActiveReport(report);
-      })
-      .finally(() => setIsLoading(false));
-  }, [selectedLine]);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5001/api/reportes?linea=${line}&estado=En Proceso`
+      );
+      if (!response.ok) {
+        throw new Error("Error al buscar el reporte de producción activo.");
+      }
+      const reports: ReporteProduccion[] = await response.json();
+      // La API devuelve el más reciente primero, así que tomamos el índice 0
+      setActiveReport(reports.length > 0 ? reports[0] : null);
+    } catch (error) {
+      console.error(error);
+      setActiveReport(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Volver a cargar los datos cuando cambia la línea seleccionada
+  useEffect(() => {
+    fetchActiveReportForLine(selectedLine);
+  }, [selectedLine, fetchActiveReportForLine]);
+
+  // --- RENDERIZADO CONDICIONAL ---
 
   if (isLoading) {
     return (
@@ -115,22 +139,23 @@ const CalidadView: React.FC<CalidadViewProps> = ({ selectedLine }) => {
   if (!activeReport) {
     return (
       <div className="start-production-container">
-        <h2>No hay producción activa</h2>
+        <h2>No hay producción activa en la Línea {selectedLine}</h2>
         <p>
           Inicie un reporte en la sección de "Producción" para poder registrar
-          controles de calidad en la línea {selectedLine}.
+          controles de calidad.
         </p>
       </div>
     );
   }
 
+  // Vista principal cuando hay un reporte activo
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div>
           <h1>Control de Calidad: Línea {selectedLine}</h1>
           <p>
-            <strong>Producto:</strong> {activeReport.producto_nombre} |
+            <strong>Producto:</strong> {activeReport.producto.nombre} |
             <strong> Lote:</strong> {activeReport.lote}
           </p>
         </div>
@@ -150,7 +175,6 @@ const CalidadView: React.FC<CalidadViewProps> = ({ selectedLine }) => {
           <p>
             Formulario para registrar las mediciones del sello de la botella.
           </p>
-          {/* Aquí iría otro componente de formulario para el sello */}
           <button className="btn-action" disabled>
             Registrar Inspección (Próximamente)
           </button>

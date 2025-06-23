@@ -51,6 +51,35 @@ def get_all_reportes():
         return jsonify([reporte.to_dict(include_details=True) for reporte in reportes]), 200
     except Exception as e:
         return jsonify({'message': 'Error al obtener los reportes', 'error': str(e)}), 500
+def get_reportes():
+    """Obtiene los reportes, puede filtrar por línea y/o estado."""
+    try:
+        query = ReporteProduccion.query
+        linea = request.args.get('linea')
+        estado_str = request.args.get('estado')
+
+        if linea:
+            query = query.filter_by(linea_produccion=linea)
+        
+        if estado_str:
+            try:
+                # Convertir el string del query param al miembro del Enum
+                estado_enum = EstadoProduccionEnum(estado_str)
+                query = query.filter_by(estado=estado_enum)
+            except ValueError:
+                # Manejar caso de estado inválido
+                return jsonify({'message': f"El valor para 'estado' ('{estado_str}') no es válido."}), 400
+
+        # Ordenar por ID descendente para obtener siempre el más reciente primero
+        reportes = query.order_by(ReporteProduccion.id.desc()).all()
+        
+        # El frontend espera una lista, aunque solo nos interese el primero
+        return jsonify([reporte.to_dict(include_details=True) for reporte in reportes]), 200
+        
+    except Exception as e:
+        # Log del error en el servidor para depuración
+        print(f"Error en get_reportes: {e}") 
+        return jsonify({'message': 'Error al obtener los reportes', 'error': str(e)}), 500
 
 
 @api_bp.route('/reportes', methods=['POST'])
