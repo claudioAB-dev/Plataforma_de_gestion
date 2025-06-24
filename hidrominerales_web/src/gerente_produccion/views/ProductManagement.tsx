@@ -1,8 +1,7 @@
-// src/gerente_produccion/views/ProductManagement.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import CreateProductModal from "../components/CreateProductModal";
 import "../styles/GerenteProduccion.css";
-
+import "../styles/Reportes.css";
 interface Producto {
   id: number;
   nombre: string;
@@ -20,7 +19,7 @@ const ProductManagement: React.FC = () => {
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:5001/api/productos/all"); // Usamos un nuevo endpoint para ver todos
+      const response = await fetch("http://127.0.0.1:5001/api/productos"); // Usamos un nuevo endpoint para ver todos
       if (!response.ok) {
         throw new Error("No se pudo obtener la lista de productos");
       }
@@ -69,7 +68,7 @@ const ProductManagement: React.FC = () => {
   if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
-    <div>
+    <div className="product-management-container">
       <div className="pm-header">
         <h2>Gestión de Productos</h2>
         <button className="pm-create-btn" onClick={() => setIsModalOpen(true)}>

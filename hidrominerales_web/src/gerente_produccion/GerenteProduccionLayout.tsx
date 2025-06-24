@@ -1,23 +1,36 @@
-// src/gerente_produccion/GerenteProduccionLayout.tsx
-import React from "react";
+import React, { useState } from "react";
 import GerenteProduccionSidebar from "./GerenteProduccionSidebar";
 import ProductManagement from "./views/ProductManagement";
+import LineasActivas from "./views/LineasActivas"; // Importar
+import ReportesList from "./views/ReportesList"; // Importar
 import "./styles/GerenteProduccion.css";
 
 const GerenteProduccionLayout: React.FC = () => {
-  // En el futuro, este estado controlará qué vista se muestra.
-  // const [activeView, setActiveView] = useState('productos');
+  // Estado para controlar la vista actual
+  const [activeView, setActiveView] = useState("lineas-activas"); // Vista por defecto
+
+  // Función para renderizar el componente de la vista activa
+  const renderActiveView = () => {
+    switch (activeView) {
+      case "productos":
+        return <ProductManagement />;
+      case "lineas-activas":
+        return <LineasActivas />;
+      case "reportes":
+        return <ReportesList />;
+      default:
+        return <LineasActivas />;
+    }
+  };
 
   return (
-    <>
-      <div className="gp-layout">
-        <GerenteProduccionSidebar />
-        <main className="gp-content">
-          {/* Aquí se renderizaría la vista activa dinámicamente */}
-          <ProductManagement />
-        </main>
-      </div>
-    </>
+    <div className="gp-layout">
+      <GerenteProduccionSidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+      />
+      <main className="gp-main-content">{renderActiveView()}</main>
+    </div>
   );
 };
 

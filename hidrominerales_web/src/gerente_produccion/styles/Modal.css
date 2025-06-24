@@ -1,0 +1,331 @@
+/* Estilos para Modal de Crear Producto */
+
+/* Overlay del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Contenido del modal */
+.modal-content {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header del modal */
+.modal-content h2 {
+  margin: 0;
+  padding: 32px 32px 24px 32px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border-bottom: 1px solid var(--medium-gray);
+  position: relative;
+}
+
+.modal-content h2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 32px;
+  right: 32px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+}
+
+/* Formulario */
+.modal-content form {
+  padding: 32px;
+}
+
+/* Grupos de formulario */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Inputs mejorados */
+.form-group input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: var(--dark-gray);
+  background: var(--white);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-group input:hover {
+  border-color: var(--primary-hover);
+}
+
+.form-group input::placeholder {
+  color: var(--secondary-color);
+  opacity: 0.7;
+}
+
+/* Mensaje de error */
+.error-message {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(220, 38, 38, 0.05)
+  );
+  color: var(--danger-color);
+  padding: 16px 20px;
+  border-radius: var(--border-radius);
+  margin: 16px 0;
+  font-weight: 500;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Acciones del modal */
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--medium-gray);
+}
+
+/* Botones del modal */
+.btn-cancel,
+.btn-confirm {
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, var(--secondary-color), #4b5563);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-cancel:hover {
+  background: linear-gradient(135deg, #4b5563, #374151);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-confirm {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover)
+  );
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-hover), #1e40af);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-confirm:disabled {
+  background: linear-gradient(135deg, var(--secondary-color), #9ca3af);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Efecto shimmer para botones en hover */
+.btn-cancel::before,
+.btn-confirm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.btn-cancel:hover::before,
+.btn-confirm:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.btn-cancel:active,
+.btn-confirm:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Loading state para el botón de confirmar */
+.btn-confirm:disabled {
+  position: relative;
+}
+
+.btn-confirm:disabled::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive para modal */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+    margin: 20px;
+  }
+
+  .modal-content h2 {
+    padding: 24px 24px 20px 24px;
+    font-size: 1.5rem;
+  }
+
+  .modal-content h2::after {
+    left: 24px;
+    right: 24px;
+  }
+
+  .modal-content form {
+    padding: 24px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content h2 {
+    padding: 20px 20px 16px 20px;
+    font-size: 1.25rem;
+  }
+
+  .modal-content h2::after {
+    left: 20px;
+    right: 20px;
+  }
+
+  .modal-content form {
+    padding: 20px;
+  }
+
+  .form-group input {
+    padding: 14px 16px;
+  }
+}

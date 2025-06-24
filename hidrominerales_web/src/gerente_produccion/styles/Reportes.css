@@ -1,0 +1,94 @@
+/* hidrominerales_web/src/gerente_produccion/styles/Reportes.css */
+.reportes-list-container,
+.reporte-detalle-container {
+  /* Se eliminó el padding de aquí */
+  padding: 0;
+  background-color: #f8f9fa;
+  width: 100%;
+  height: 100%;
+}
+
+/* Se añade padding a los elementos internos para que no se peguen a los bordes */
+.reportes-list-container > h1,
+.reporte-detalle-container > h1,
+.reporte-detalle-container > .back-link {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1.5rem;
+}
+
+.reporte-detalle-container > h1 {
+  border-bottom: 2px solid #0056b3;
+  padding-bottom: 0.5rem;
+  margin: 0 2rem 2rem;
+}
+
+.table-responsive {
+  padding: 0 2rem 2rem;
+}
+
+.reportes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.reportes-table th,
+.reportes-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.reportes-table th {
+  background-color: #e9ecef;
+}
+
+.reportes-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reportes-table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.status-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.status-pill.en-proceso {
+  background-color: #007bff;
+}
+.status-pill.terminado {
+  background-color: #28a745;
+}
+.status-pill.cancelado {
+  background-color: #dc3545;
+}
+
+/* Estilos para Detalle */
+.detalle-seccion {
+  background-color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  margin: 0 2rem 1.5rem; /* Se ajusta el margen para que no se pegue al título */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.detalle-seccion h2 {
+  margin-top: 0;
+  color: #0056b3;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}

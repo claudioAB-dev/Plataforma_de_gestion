@@ -7,6 +7,7 @@ import VentasLayout from "./produccion/produccion";
 import AdminLayout from "./admin/AdminLayout"; // <-- 1. IMPORTAR
 import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout"; // <-- 1. IMPORTAR
 import ErrorBoundary from "./ErrorBoundary";
+import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle"; // Importar
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -134,6 +135,15 @@ const AppContent: React.FC = () => {
               element={
                 <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
                   <GerenteProduccionLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/gerente-produccion/reportes/:reporteId"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
+                  {/* Podemos envolverlo en un layout si queremos el sidebar visible */}
+                  <ReporteDetalle />
                 </RoleProtectedRoute>
               }
             />

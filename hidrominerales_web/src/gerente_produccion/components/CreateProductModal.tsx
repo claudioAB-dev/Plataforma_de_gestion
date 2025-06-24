@@ -1,5 +1,6 @@
-// src/gerente_produccion/components/CreateProductModal.tsx
 import React, { useState } from "react";
+import "../styles/Modal.css";
+
 interface CreateProductModalProps {
   onClose: () => void;
   onSave: () => void;

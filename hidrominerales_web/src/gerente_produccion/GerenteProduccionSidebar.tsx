@@ -1,33 +1,43 @@
-// src/gerente_produccion/GerenteProduccionSidebar.tsx
+// hidrominerales_web/src/gerente_produccion/GerenteProduccionSidebar.tsx
 import React from "react";
 import "./styles/GerenteProduccion.css";
 
-// Por ahora la interfaz de props está vacía, pero se prepara para el futuro.
-interface GerenteProduccionSidebarProps {
-  // setActiveView: (view: string) => void;
-  // activeView: string;
+// Props para indicar la vista activa y permitir el cambio
+interface SidebarProps {
+  activeView: string;
+  setActiveView: (view: string) => void;
 }
 
-const GerenteProduccionSidebar: React.FC<
-  GerenteProduccionSidebarProps
-> = () => {
+const GerenteProduccionSidebar: React.FC<SidebarProps> = ({
+  activeView,
+  setActiveView,
+}) => {
   return (
-    <div className="gp-sidebar">
-      <h3>Menú</h3>
-      <ul>
-        {/* La clase 'active' será dinámica en el futuro cuando haya más vistas */}
-        <li className="active">Gestión de Productos</li>
-        <li style={{ color: "#6c757d", cursor: "not-allowed" }}>
-          Gestión de Inventario (Próximamente)
-        </li>
-        <li style={{ color: "#6c757d", cursor: "not-allowed" }}>
-          Calendario de Producción (Próximamente)
-        </li>
-        <li style={{ color: "#6c757d", cursor: "not-allowed" }}>
-          Reporte de Personal (Próximamente)
-        </li>
-      </ul>
-    </div>
+    <aside className="gp-sidebar">
+      <h2>Gerencia</h2>
+      <nav>
+        <ul>
+          <li
+            className={activeView === "productos" ? "active" : ""}
+            onClick={() => setActiveView("productos")}
+          >
+            Gestión de Productos
+          </li>
+          <li
+            className={activeView === "lineas-activas" ? "active" : ""}
+            onClick={() => setActiveView("lineas-activas")}
+          >
+            Líneas Activas
+          </li>
+          <li
+            className={activeView === "reportes" ? "active" : ""}
+            onClick={() => setActiveView("reportes")}
+          >
+            Historial de Reportes
+          </li>
+        </ul>
+      </nav>
+    </aside>
   );
 };
 
