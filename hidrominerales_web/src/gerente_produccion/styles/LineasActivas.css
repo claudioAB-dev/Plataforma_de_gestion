@@ -1,100 +1,622 @@
-/* hidrominerales_web/src/gerente_produccion/styles/LineasActivas.css */
+/* LineasActivas.css - Refactorizado con diseño moderno y profesional */
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success-color: #10b981;
+  --success-hover: #059669;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #0ea5e9;
+  --secondary-color: #6b7280;
+  --light-gray: #f8fafc;
+  --medium-gray: #e2e8f0;
+  --dark-gray: #374151;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover)
+  );
+  --gradient-success: linear-gradient(
+    135deg,
+    var(--success-color),
+    var(--success-hover)
+  );
+  --gradient-background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Dashboard principal */
 .lineas-activas-dashboard {
-  /* Se eliminó el padding de aquí para que el contenedor ocupe todo el espacio */
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  background: var(--gradient-background);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Se agrega padding a los elementos internos para mantener la legibilidad */
+.lineas-activas-dashboard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--success-color),
+    var(--info-color)
+  );
+  z-index: 1;
+}
+
+/* Título principal mejorado */
 .lineas-activas-dashboard > h1 {
-  padding: 1.5rem 2rem 0;
-  margin-bottom: 1.5rem;
+  padding: 2rem 2rem 1rem;
+  margin: 0 0 2rem 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
+.lineas-activas-dashboard > h1::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: var(--gradient-success);
+  border-radius: 2px;
+}
+
+/* Contenedor de tarjetas mejorado */
 .cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 2rem;
-  /* Se agrega padding aquí para separar las tarjetas de los bordes */
-  padding: 0 2rem 2rem;
+  padding: 0 2rem 3rem;
+  position: relative;
+  z-index: 2;
 }
 
+/* Tarjeta de línea completamente rediseñada */
 .linea-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
-  transition: transform 0.2s ease-in-out;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+.linea-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.02) 0%,
+    rgba(16, 185, 129, 0.01) 50%,
+    rgba(14, 165, 233, 0.02) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .linea-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(37, 99, 235, 0.2);
 }
 
+.linea-card:hover::before {
+  opacity: 1;
+}
+
+/* Header de tarjeta mejorado */
 .card-header {
-  background-color: #0056b3;
-  color: white;
-  padding: 1rem;
+  background: var(--gradient-primary);
+  color: var(--white);
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.linea-card:hover .card-header::before {
+  left: 100%;
 }
 
 .card-header h3 {
   margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Badge de estado rediseñado */
 .status-badge {
-  background-color: #28a745;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
+.status-badge.en-proceso {
+  background: linear-gradient(
+    135deg,
+    var(--success-color),
+    var(--success-hover)
+  );
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-badge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.linea-card:hover .status-badge::before {
+  left: 100%;
+}
+
+/* Cuerpo de tarjeta mejorado */
 .card-body {
-  padding: 1.5rem;
+  padding: 2rem;
+  position: relative;
 }
 
 .card-body p {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--dark-gray);
+  line-height: 1.6;
 }
 
+.card-body p strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Métricas rediseñadas */
 .metrics {
-  display: flex;
-  justify-content: space-around;
-  margin: 1.5rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.03),
+    rgba(16, 185, 129, 0.02)
+  );
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+.metric-item {
   text-align: center;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.metric-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-item:hover::before {
+  transform: scaleX(1);
 }
 
 .metric-item span {
   display: block;
-  color: #6c757d;
+  color: var(--secondary-color);
   font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
 }
 
 .metric-item strong {
-  font-size: 1.8rem;
-  color: #343a40;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  display: block;
+  line-height: 1;
 }
 
-.progress-chart-container {
-  margin-top: 1rem;
-  height: 150px;
+/* Contenedor wrapper para el ProgressChart - evita conflictos de nombres */
+.lineas-activas-dashboard .progress-chart-wrapper {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.02),
+    rgba(16, 185, 129, 0.01)
+  );
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
+.lineas-activas-dashboard .progress-chart-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-success);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+/* Estilos específicos para el componente ProgressChart dentro de LineasActivas */
+.lineas-activas-dashboard .progress-chart-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* SVG del gráfico de progreso */
+.lineas-activas-dashboard .progress-chart-svg {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+.lineas-activas-dashboard .progress-chart-wrapper:hover .progress-chart-svg {
+  transform: scale(1.05);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+}
+
+/* Círculos del gráfico de progreso */
+.lineas-activas-dashboard .progress-background {
+  fill: none;
+  stroke: rgba(37, 99, 235, 0.1);
+  stroke-linecap: round;
+}
+
+.lineas-activas-dashboard .progress-foreground {
+  fill: none;
+  stroke: url(#progressGradient);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+/* Texto del porcentaje en el centro del gráfico */
+.lineas-activas-dashboard .progress-text {
+  fill: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-family: inherit;
+}
+
+/* Etiqueta con los números debajo del gráfico */
+.lineas-activas-dashboard .progress-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.05),
+    rgba(16, 185, 129, 0.03)
+  );
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.lineas-activas-dashboard .progress-chart-wrapper:hover .progress-label {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(16, 185, 129, 0.05)
+  );
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Gradiente para el stroke del gráfico */
+.lineas-activas-dashboard .progress-chart-svg defs linearGradient,
+.lineas-activas-dashboard .progress-chart-svg linearGradient {
+  stop:first-child {
+    stop-color: var(--primary-color);
+  }
+  stop:last-child {
+    stop-color: var(--success-color);
+  }
+}
+
+/* Actividad reciente mejorada */
 .last-activity {
-  font-size: 0.8rem;
-  color: #6c757d;
-  text-align: right;
-  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(107, 114, 128, 0.05),
+    rgba(156, 163, 175, 0.03)
+  );
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(107, 114, 128, 0.1);
+  font-weight: 500;
 }
 
+/* Estado de carga mejorado */
 .loading-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
+  background: var(--gradient-background);
+  position: relative;
+}
+
+.loading-container::before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 4px solid rgba(37, 99, 235, 0.1);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 2rem;
+}
+
+.loading-container h2 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 8rem;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Contenedor de inicio de producción mejorado */
+.start-production-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--white);
+  margin: 2rem;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--medium-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-production-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--warning-color), var(--info-color));
+}
+
+.start-production-container h2 {
+  color: var(--secondary-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  background: linear-gradient(135deg, var(--secondary-color), var(--dark-gray));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .lineas-activas-dashboard > h1 {
+    font-size: 2rem;
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem 2rem;
+  }
+
+  .linea-card {
+    margin: 0;
+  }
+
+  .card-header {
+    padding: 1.25rem;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .card-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+
+  .metric-item strong {
+    font-size: 1.8rem;
+  }
+
+  .lineas-activas-dashboard .progress-chart-wrapper {
+    min-height: 180px;
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+  }
+
+  .lineas-activas-dashboard .progress-chart-svg {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .lineas-activas-dashboard .progress-label {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .start-production-container {
+    margin: 1rem;
+    padding: 3rem 1.5rem;
+  }
+
+  .start-production-container h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lineas-activas-dashboard > h1 {
+    font-size: 1.75rem;
+    padding: 1rem;
+  }
+
+  .cards-container {
+    padding: 0 0.5rem 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .metric-item strong {
+    font-size: 1.6rem;
+  }
 }

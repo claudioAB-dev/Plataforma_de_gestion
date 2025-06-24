@@ -45,7 +45,7 @@ const LineaActivaCard: React.FC<{ report: ReporteProduccion }> = ({
             <strong>{totalMinutosParo}</strong>
           </div>
         </div>
-        <div className="progress-chart-container">
+        <div className="progress-chart-wrapper">
           <ProgressChart
             target={report.produccion_objetivo}
             progress={botellasProducidas}

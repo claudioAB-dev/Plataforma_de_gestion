@@ -211,6 +211,17 @@ def update_reporte(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Error al actualizar el reporte', 'error': str(e)}), 500
+@api_bp.route('/reportes/<int:id>', methods=['DELETE'])
+def delete_reporte(id):
+    """Elimina un reporte de producción."""
+    reporte = ReporteProduccion.query.get_or_404(id)
+    try:
+        db.session.delete(reporte)
+        db.session.commit()
+        return jsonify({'message': f'Reporte con ID {id} eliminado exitosamente.'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Error al eliminar el reporte', 'error': str(e)}), 500
 
 # --- Rutas para Sub-recursos de Reportes (Pallets, Paros, Mermas) ---
 
