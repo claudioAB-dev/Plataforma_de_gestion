@@ -1,11 +1,8 @@
-# hidrominarales_api/app/models.py
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, Enum as SQLAlchemyEnum
 from werkzeug.security import generate_password_hash, check_password_hash
 import enum
-
-db = SQLAlchemy()
+from .extensions import db
 
 # --- Modelos Rol, User y Producto (sin cambios) ---
 class Rol(db.Model):
@@ -87,6 +84,7 @@ class ReporteProduccion(db.Model):
     paros = db.relationship('ParoLinea', backref='reporte', cascade="all, delete-orphan")
     mermas = db.relationship('Merma', backref='reporte', cascade="all, delete-orphan")
 
+
     def to_dict(self, include_details=False):
         data = {
             'id': self.id,
@@ -102,14 +100,16 @@ class ReporteProduccion(db.Model):
             
             'operador_engargolado_id': self.operador_engargolado_id,
             'responsable_linea_id': self.responsable_linea_id,
-            # FIX: Serialización segura para el campo Enum 'estado'
             'estado': self.estado.value if isinstance(self.estado, enum.Enum) else self.estado,
             'producto': self.producto.to_dict() if self.producto else None
         }
+
+        # Si la llamada a la función pide los detalles, los incluimos.
         if include_details:
             data['pallets'] = [p.to_dict() for p in self.pallets]
             data['paros'] = [p.to_dict() for p in self.paros]
             data['mermas'] = [m.to_dict() for m in self.mermas]
+        
         return data
 
 class PalletTerminado(db.Model):

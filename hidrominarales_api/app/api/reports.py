@@ -1,84 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
-from .models import db, User, Rol, Producto, ReporteProduccion, PalletTerminado, ParoLinea, Merma, EstadoProduccionEnum
+from . import api_bp
+from ..models import db, User, Rol, Producto, ReporteProduccion, PalletTerminado, ParoLinea, Merma, EstadoProduccionEnum
 from datetime import datetime
-
-api_bp = Blueprint('api', __name__, url_prefix='/api')
-
-
-
-
-
-# --- Rutas para Usuarios y Roles (requeridas por los selectores) ---
-@api_bp.route('/users', methods=['GET'])
-def get_users():
-    """Obtiene todos los usuarios."""
-    users = User.query.all()
-    return jsonify([user.serialize() for user in users]), 200
-
-
-@api_bp.route('/roles', methods=['GET'])
-def get_roles():
-    roles = Rol.query.all()
-    return jsonify([rol.serialize() for rol in roles]), 200
-
-
-
-# --- Rutas para Productos (requeridas por los selectores) ---
-@api_bp.route('/productos', methods=['POST'])
-def create_producto():
-    data = request.get_json()
-    nuevo_producto = Producto(**data)
-    db.session.add(nuevo_producto)
-    db.session.commit()
-    return jsonify(nuevo_producto.to_dict()), 201
-
-@api_bp.route('/productos', methods=['GET'])
-def get_all_productos():
-    productos = Producto.query.filter_by(activo=True).all()
-    return jsonify([p.to_dict() for p in productos])
-
-@api_bp.route('/productos/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-def handle_producto(id):
-    producto = Producto.query.get_or_404(id)
-    if request.method == 'GET':
-        return jsonify(producto.to_dict())
-    elif request.method == 'PUT':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(producto, key, value)
-        db.session.commit()
-        return jsonify(producto.to_dict())
-    elif request.method == 'DELETE':
-        # Borrado lógico
-        producto.activo = False
-        db.session.commit()
-        return '', 204
-
-
-# --- Rutas para el Login y Autenticación ---
-
-@api_bp.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    if not data or not 'nombre' in data or not 'contrasena' in data:
-        return jsonify({'message': 'Nombre de usuario y contraseña requeridos'}), 400
-
-    user = User.query.filter_by(nombre=data['nombre']).first()
-
-    if user and user.check_password(data['contrasena']):
-        # Aquí normalmente generarías un token (JWT, etc.)
-        return jsonify({
-            'message': 'Login exitoso',
-            'user': user.serialize()
-        }), 200
-    
-    return jsonify({'message': 'Credenciales inválidas'}), 401
-
-
-
-
-# --- Rutas para Reportes de Producción ---
 
 @api_bp.route('/reportes', methods=['GET'])
 def get_all_reportes():

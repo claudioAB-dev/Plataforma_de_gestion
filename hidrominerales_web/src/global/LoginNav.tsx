@@ -1,10 +1,8 @@
 import React from "react";
 import "./styles/navbar.css";
-import { useAuth } from "../context/AuthContext";
 
-const Navbar: React.FC = () => {
+const LoginNav: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { logout } = useAuth();
 
   const handleNavMenuToggle = () => {
     setIsOpen(!isOpen);
@@ -38,8 +36,8 @@ const Navbar: React.FC = () => {
               <a href="/" className="navbar-menu-item">
                 Home
               </a>
-              <a href="#" className="navbar-menu-item" onClick={logout}>
-                Logout
+              <a href="#" className="navbar-menu-item">
+                Help
               </a>
             </div>
           </div>
@@ -49,4 +47,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar;
+export default LoginNav;

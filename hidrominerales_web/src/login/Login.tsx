@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import Footer from "../global/footer"; // 1. IMPORTA EL FOOTER
+import Footer from "../global/footer";
+import LoginNav from "../global/LoginNav";
 
 import "./styles/login.css";
 
