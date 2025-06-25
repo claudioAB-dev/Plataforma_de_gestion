@@ -1,5 +1,3 @@
-// hidrominerales_web/src/types.ts
-
 // Interfaz corregida para coincidir con el to_dict() del modelo Producto
 export interface Producto {
   id: number;

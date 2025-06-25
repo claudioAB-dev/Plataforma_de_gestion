@@ -18,8 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navItems = [
     { id: "home", label: "Producción", icon: "🏭" },
     { id: "calidad", label: "Calidad", icon: "✔️" },
-    { id: "reportes", label: "Reportes Producción", icon: "📊" },
-    { id: "reportes2", label: "Reportes Calidad", icon: "📈" },
+    { id: "Insumos", label: "Insumos", icon: "🛒" },
   ];
 
   const lineas = [1, 2, 3, 4, 5];

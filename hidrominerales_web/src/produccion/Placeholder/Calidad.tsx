@@ -1,22 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "../styles/ProduccionDashboard.css"; // Reutilizamos estilos del dashboard
 import "../styles/CalidadDashboard.css"; // Estilos específicos para calidad
+import type { ReporteProduccion } from "../../types";
 
-// --- INTERFACES PARA LOS DATOS DE LA API ---
-interface Producto {
-  id: number;
-  nombre: string;
-}
-
-interface ReporteProduccion {
-  id: number;
-  lote: string;
-  producto: Producto;
-  // No necesitamos todos los detalles, solo los relevantes para la vista
-}
-
-// --- COMPONENTE DEL FORMULARIO DE CALIDAD (sin cambios en su lógica interna) ---
-// Este componente se activará cuando exista un reporte de producción activo.
 const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +75,6 @@ const QualityControlForm: React.FC<{ reporteId: number }> = ({ reporteId }) => {
   );
 };
 
-// --- COMPONENTE PRINCIPAL DE LA VISTA DE CALIDAD ---
 interface CalidadViewProps {
   selectedLine: number;
 }
@@ -126,8 +111,6 @@ const CalidadView: React.FC<CalidadViewProps> = ({ selectedLine }) => {
     fetchActiveReportForLine(selectedLine);
   }, [selectedLine, fetchActiveReportForLine]);
 
-  // --- RENDERIZADO CONDICIONAL ---
-
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -155,7 +138,7 @@ const CalidadView: React.FC<CalidadViewProps> = ({ selectedLine }) => {
         <div>
           <h1>Control de Calidad: Línea {selectedLine}</h1>
           <p>
-            <strong>Producto:</strong> {activeReport.producto.nombre} |
+            <strong>Producto:</strong> {activeReport.producto?.nombre} |
             <strong> Lote:</strong> {activeReport.lote}
           </p>
         </div>

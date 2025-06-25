@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Modal.css";
+import "../styles/ProduccionModal.css";
 
 interface RegisterPalletModalProps {
   isOpen: boolean;

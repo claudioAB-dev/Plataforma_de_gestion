@@ -3,10 +3,9 @@ import Sidebar from "./sidebar";
 import Home from "./Placeholder/Home";
 import CalidadView from "./Placeholder/Calidad";
 import ReportesGen from "./Placeholder/Reportes_gen";
-import Reportes2 from "./Placeholder/Reportes2";
 import "./styles/produccion.css";
 
-export type Seccion = "home" | "calidad" | "reportes" | "reportes2";
+export type Seccion = "home" | "calidad" | "Insumos";
 
 const ProduccionLayout: React.FC = () => {
   const [seccionActual, setSeccionActual] = useState<Seccion>("home");
@@ -18,10 +17,9 @@ const ProduccionLayout: React.FC = () => {
         return <Home selectedLine={selectedLine} />;
       case "calidad":
         return <CalidadView selectedLine={selectedLine} />;
-      case "reportes":
+      case "Insumos":
         return <ReportesGen />;
-      case "reportes2":
-        return <Reportes2 />;
+
       default:
         return <Home selectedLine={selectedLine} />;
     }

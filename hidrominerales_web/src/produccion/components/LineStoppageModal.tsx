@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Modal.css";
+import "../styles/ProduccionModal.css";
 
 interface LineStoppageModalProps {
   isOpen: boolean;
