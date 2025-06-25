@@ -50,6 +50,7 @@
 
 .dashboard-header h1 {
   margin: 0 0 0.5rem 0;
+  color: #2c3e50;
 }
 
 .dashboard-header p {
@@ -57,78 +58,308 @@
   color: #666;
 }
 
+.dashboard-header .subtitle {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
 .btn-finish-production {
   background-color: #dc3545;
   color: white;
   padding: 12px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btn-finish-production:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .dashboard-card {
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .dashboard-card h3 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 0.5rem;
 }
 
 .dashboard-card p {
   color: #666;
-  flex-grow: 1; /* Hace que el texto ocupe el espacio disponible */
+  flex-grow: 1;
   margin-bottom: 1.5rem;
 }
 
-.btn-action {
-  padding: 0.75rem 1rem;
-  font-weight: bold;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.btn-action:hover {
-  background-color: #e2e6ea;
-}
-
-.btn-action.btn-stop {
-  background-color: #fff3cd;
-  border-color: #ffc107;
-}
-
-.btn-action.btn-merma {
-  background-color: #f8d7da;
-  border-color: #dc3545;
-}
-.dashboard-grid-with-progress {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
+/* Estilos específicos para la tarjeta de progreso */
 .progress-card {
-  /* Opcional: hacer que ocupe más espacio si se desea */
-  /* grid-column: span 2; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
 }
 
 .progress-card h3 {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.main-progress {
+  grid-column: span 1;
+  min-height: 200px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilos para las listas de detalles */
+.details-list {
+  flex-grow: 1;
   margin-bottom: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+}
+
+.details-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.details-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.details-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.details-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.details-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: white;
+  border-radius: 6px;
+  border-left: 4px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.details-list-item:hover {
+  transform: translateX(2px);
+  border-left-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.details-list-item:last-child {
+  margin-bottom: 0;
+}
+
+.details-list-item span:first-child {
+  color: #495057;
+  font-weight: 500;
+}
+
+.details-list-item span:last-child {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.details-list-item strong {
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* Estilos para cuando no hay datos */
+.no-data {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 2rem;
+  margin: 0;
+  background-color: white;
+  border-radius: 6px;
+  border: 2px dashed #dee2e6;
+}
+
+/* Estilos para valores de resumen */
+.summary-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ffc107;
+  text-align: center;
+  margin: 1rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summary-total {
+  background-color: #e9ecef;
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+  border-left: 4px solid #28a745;
+}
+
+/* Estilos para botones de acción */
+.btn-action {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.btn-action:hover::before {
+  left: 100%;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Botón por defecto (registrar pallet) */
+.btn-action {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.btn-action:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+}
+
+/* Botón de paro */
+.btn-action.btn-stop {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #212529;
+}
+
+.btn-action.btn-stop:hover {
+  background: linear-gradient(135deg, #e0a800, #d39e00);
+}
+
+/* Botón de merma */
+.btn-action.btn-merma {
+  background: linear-gradient(135deg, #dc3545, #bd2130);
+  color: white;
+}
+
+.btn-action.btn-merma:hover {
+  background: linear-gradient(135deg, #bd2130, #a71e2a);
+}
+
+/* Estilos específicos para tarjetas de resumen */
+.summary-card {
+  position: relative;
+}
+
+.summary-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #007bff, #28a745, #ffc107, #dc3545);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .summary-value {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .details-list {
+    max-height: 150px;
+  }
+
+  .details-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .summary-value {
+    font-size: 1.5rem;
+  }
 }

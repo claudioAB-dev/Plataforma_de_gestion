@@ -2,13 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import CreateProductModal from "../components/CreateProductModal";
 import "../styles/GerenteProduccion.css";
 import "../styles/Reportes.css";
-interface Producto {
-  id: number;
-  nombre: string;
-  presentacion: string;
-  sku: string;
-  activo: boolean;
-}
+import type { Producto } from "../../types";
 
 const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Producto[]>([]);
@@ -89,6 +83,7 @@ const ProductManagement: React.FC = () => {
             <th>Nombre</th>
             <th>Presentación</th>
             <th>SKU</th>
+            <th>CO2 Nominal (kg/ud)</th>
             <th>Estado</th>
             <th>Acción</th>
           </tr>
@@ -99,6 +94,7 @@ const ProductManagement: React.FC = () => {
               <td data-label="Nombre">{product.nombre}</td>
               <td data-label="Presentación">{product.presentacion}</td>
               <td data-label="SKU">{product.sku}</td>
+              <td>{product.co2_nominal ?? "N/A"}</td>
               <td data-label="Estado">
                 <span style={{ color: product.activo ? "green" : "gray" }}>
                   {product.activo ? "Activo" : "Inactivo"}

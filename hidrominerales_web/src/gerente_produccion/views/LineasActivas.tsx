@@ -52,7 +52,14 @@ const LineaActivaCard: React.FC<{ report: ReporteProduccion }> = ({
           />
         </div>
         <p className="last-activity">
-          Inició: {new Date(report.hora_arranque).toLocaleString()}
+          Inició:{" "}
+          {(() => {
+            const fecha = report.fecha_produccion;
+            const hora = report.hora_arranque;
+            const fechaHora = `${fecha}T${hora}`;
+            const dateObj = new Date(fechaHora);
+            return dateObj.toLocaleString();
+          })()}{" "}
         </p>
       </div>
     </div>

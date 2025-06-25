@@ -3,31 +3,13 @@ import StartProductionModal from "../components/StartProductionModal";
 import RegisterPalletModal from "../components/RegisterPalletModal";
 import LineStoppageModal from "../components/LineStoppageModal";
 import RegisterMermaModal from "../components/RegisterMermaModal";
-import type { MermaData as MermaFormData } from "../components/RegisterMermaModal";
 import ProgressChart from "../components/ProgressChart";
 import "../styles/ProduccionDashboard.css";
 
-// Interfaces de datos del Frontend
-interface Producto {
-  id: number;
-  nombre: string;
-}
+// Importamos los tipos desde el archivo central para mantener la consistencia.
+import type { ReporteProduccion } from "../../types";
 
-interface Pallet {
-  cantidad_charolas: number;
-}
-
-interface ReporteProduccion {
-  id: number;
-  lote: string;
-  produccion_objetivo: number;
-  producto: Producto;
-  pallets: Pallet[];
-  hora_arranque: string;
-  estado: "En Proceso" | "Terminado" | "Cancelado";
-}
-
-const BOTELLAS_POR_CHAROLA = 60; // Este valor debería venir idealmente de la API junto con el producto
+const BOTELLAS_POR_CHAROLA = 60;
 
 const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
   const [activeReport, setActiveReport] = useState<ReporteProduccion | null>(
@@ -43,7 +25,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:5001/api/reportes?linea=${line}&estado=En Proceso`
+        `http://127.0.0.1:5001/api/reportes?linea=${line}&estado=En Proceso&details=true`
       );
       if (!response.ok) throw new Error("Error al buscar reporte activo");
 
@@ -80,7 +62,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
           }
         );
         if (!response.ok) throw new Error("Error al finalizar la producción.");
-        setActiveReport(null); // Limpiamos el reporte activo para refrescar la vista a 'Inactiva'
+        setActiveReport(null);
       } catch (err) {
         alert(err instanceof Error ? err.message : "Error desconocido");
       }
@@ -95,7 +77,6 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     );
   }
 
-  // --- Renderizado Condicional ---
   if (!activeReport) {
     return (
       <>
@@ -127,15 +108,25 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     0
   );
   const botellasProducidas = totalCharolas * BOTELLAS_POR_CHAROLA;
+  const totalMinutosParo = (activeReport.paros || []).reduce(
+    (sum, p) => sum + p.duracion_minutos,
+    0
+  );
+  const totalMerma = (activeReport.mermas || []).reduce(
+    (sum, m) => sum + m.cantidad,
+    0
+  );
+  const totalPallets = (activeReport.pallets || []).length;
 
   return (
     <>
+      {/* Modales (sin cambios) */}
       <RegisterPalletModal
         isOpen={showPalletModal}
         onClose={() => setShowPalletModal(false)}
         onSave={handleModalSave}
         reporteId={activeReport.id}
-        nextPalletNumber={(activeReport.pallets || []).length + 1}
+        nextPalletNumber={totalPallets + 1}
       />
       <LineStoppageModal
         isOpen={showStoppageModal}
@@ -148,20 +139,15 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
         onClose={() => setShowMermaModal(false)}
         onSave={handleModalSave}
         reporteId={activeReport.id}
-        currentMerma={{
-          tapa_operador: 0,
-          tapa_equipo: 0,
-          tapa_muestreo: 0,
-          botella_muestreo: 0,
-          merma_botella: 0,
-        }} // Simplificado, una mejora sería fetchear la merma actual
+        currentMerma={undefined}
       />
+
       <div className="dashboard-container">
         <header className="dashboard-header">
           <div>
             <h1>Reporte de Producción: Línea {selectedLine}</h1>
             <p>
-              <strong>Producto:</strong> {activeReport.producto.nombre} |{" "}
+              <strong>Producto:</strong> {activeReport.producto?.nombre} |{" "}
               <strong>Lote:</strong> {activeReport.lote}
             </p>
             <p className="subtitle">
@@ -176,50 +162,77 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
           </button>
         </header>
 
-        <div className="dashboard-grid dashboard-grid-with-progress">
-          <div className="dashboard-card progress-card">
+        {/* --- INICIO DE LA MODIFICACIÓN: Grid con tarjetas de detalle --- */}
+        <div className="dashboard-grid">
+          <div className="dashboard-card progress-card main-progress">
             <h3>Progreso del Turno</h3>
             <ProgressChart
               progress={botellasProducidas}
               target={activeReport.produccion_objetivo}
             />
           </div>
-          <div className="dashboard-card">
-            <h3>Producto Terminado</h3>
-            <p>
-              Registra un pallet de producto que ha sido completado y emplayado.
-            </p>
+
+          <div className="dashboard-card summary-card">
+            <h3>Historial de Pallets</h3>
+            <div className="details-list">
+              {(activeReport.pallets || []).length > 0 ? (
+                (activeReport.pallets || []).map((pallet) => (
+                  <div key={pallet.id} className="details-list-item">
+                    <span>
+                      Pallet #{pallet.numero_pallet} ({pallet.cantidad_charolas}{" "}
+                      ch.)
+                    </span>
+                    <span>{pallet.hora_registro}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-data">No hay pallets registrados.</p>
+              )}
+            </div>
             <button
               className="btn-action"
               onClick={() => setShowPalletModal(true)}
             >
-              Registrar Pallet
+              + Registrar Pallet
             </button>
           </div>
-          <div className="dashboard-card">
+
+          <div className="dashboard-card summary-card">
             <h3>Paros de Línea</h3>
-            <p>
-              Registra cualquier detención en la línea, ya sea programada o
-              inesperada.
-            </p>
+            <div className="summary-value">{totalMinutosParo}</div>
+            <p>Minutos de paro acumulados</p>
             <button
               className="btn-action btn-stop"
               onClick={() => setShowStoppageModal(true)}
             >
-              Registrar Paro
+              + Registrar Paro
             </button>
           </div>
-          <div className="dashboard-card">
-            <h3>Merma</h3>
-            <p>Registra o actualiza la cantidad de material de desperdicio.</p>
+
+          <div className="dashboard-card summary-card">
+            <h3>Detalle de Merma</h3>
+            <div className="details-list">
+              {(activeReport.mermas || []).length > 0 ? (
+                (activeReport.mermas || []).map((merma) => (
+                  <div key={merma.id} className="details-list-item">
+                    <span>{merma.tipo_merma}</span>
+                    <strong>{merma.cantidad} uds.</strong>
+                  </div>
+                ))
+              ) : (
+                <p className="no-data">No hay merma registrada.</p>
+              )}
+            </div>
+            <div className="summary-total">Total: {totalMerma} uds.</div>
             <button
               className="btn-action btn-merma"
               onClick={() => setShowMermaModal(true)}
             >
-              Actualizar Merma
+              + Registrar Merma
             </button>
           </div>
         </div>
+        {/* --- FIN DE LA MODIFICACIÓN --- */}
       </div>
     </>
   );

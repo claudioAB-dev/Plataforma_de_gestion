@@ -13,12 +13,13 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const [nombre, setNombre] = useState("");
   const [presentacion, setPresentacion] = useState("");
   const [sku, setSku] = useState("");
+  const [co2Nominal, setCo2Nominal] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !presentacion || !sku) {
+    if (!nombre || !presentacion || !sku || !co2Nominal) {
       setError("Todos los campos son obligatorios.");
       return;
     }
@@ -31,7 +32,13 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nombre, presentacion, sku, activo: true }),
+        body: JSON.stringify({
+          nombre,
+          presentacion,
+          sku,
+          co2Nominal: parseFloat(co2Nominal),
+          activo: true,
+        }),
       });
 
       if (!response.ok) {
@@ -70,6 +77,17 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
               type="text"
               value={presentacion}
               onChange={(e) => setPresentacion(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="co2_nominal">CO₂ Nominal (g/L)</label>
+            <input
+              id="co2_nominal"
+              type="number"
+              step="any"
+              value={co2Nominal}
+              onChange={(e) => setCo2Nominal(e.target.value)}
               required
             />
           </div>

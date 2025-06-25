@@ -20,6 +20,7 @@ export interface Producto {
   nombre: string;
   presentacion: string;
   sku: string;
+  co2_nominal: number | null; // Añadimos el nuevo campo
   activo: boolean;
 }
 
