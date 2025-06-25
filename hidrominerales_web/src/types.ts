@@ -1,3 +1,19 @@
+// Interfaz para el modelo Rol
+export interface Rol {
+  id: number;
+  nombre: string;
+  permisos: string | null;
+  user_count?: number; // Opcional, desde la serialización
+}
+
+// Actualizamos la interfaz de User para que sea más completa
+export interface User {
+  id: number;
+  nombre: string;
+  rol_id: number;
+  rol_nombre: string | null; // El nombre del rol puede venir en la serialización
+}
+
 // Interfaz corregida para coincidir con el to_dict() del modelo Producto
 export interface Producto {
   id: number;

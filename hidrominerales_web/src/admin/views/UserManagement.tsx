@@ -1,72 +1,69 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import type { User } from "../../types";
+import UserModal from "../components/UserModal"; // <-- 1. Importar el modal
 import "../styles/UserManagement.css";
-
-// Definimos los tipos para mayor claridad
-interface User {
-  id: number;
-  nombre: string;
-  rol_id: number;
-  rol_nombre: string;
-}
-
-interface Rol {
-  id: number;
-  nombre: string;
-}
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  // Función para obtener usuarios y roles de la API
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const usersResponse = await fetch("http://127.0.0.1:5001/api/users");
-      const rolesResponse = await fetch("http://127.0.0.1:5001/api/roles");
-
-      if (!usersResponse.ok || !rolesResponse.ok) {
-        throw new Error("Error al obtener los datos del servidor.");
+      if (!usersResponse.ok) {
+        throw new Error("Error al obtener los usuarios del servidor.");
       }
-
       const usersData = await usersResponse.json();
-      const rolesData = await rolesResponse.json();
-
       setUsers(usersData);
-      setRoles(rolesData);
       setError(null);
     } catch (err: any) {
       setError(err.message);
-      console.error("Error fetching data:", err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // useEffect para cargar los datos cuando el componente se monta
-  useEffect(() => {
-    fetchData();
   }, []);
 
-  const handleAddUser = () => {
-    // Aquí abrirías un modal para añadir un nuevo usuario
-    alert("Funcionalidad para añadir usuario (próximamente).");
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // --- 2. Lógica para abrir y cerrar el modal ---
+  const handleOpenModal = (user: User | null = null) => {
+    setEditingUser(user);
+    setIsModalOpen(true);
   };
 
-  const handleEditUser = (user: User) => {
-    // Aquí abrirías un modal para editar el usuario seleccionado
-    alert(`Editar usuario: ${user.nombre}`);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingUser(null);
   };
 
-  const handleDeleteUser = (userId: number) => {
-    // Lógica para borrar usuario (requiere endpoint en la API)
+  const handleSave = () => {
+    handleCloseModal();
+    fetchData(); // Recargar la lista de usuarios
+  };
+
+  // --- 3. Lógica para eliminar ---
+  const handleDeleteUser = async (userId: number) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
-      alert(
-        `Eliminar usuario con ID: ${userId} (requiere implementación en API).`
-      );
-      // Lógica de DELETE a /api/users/${userId}
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5001/api/users/${userId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (!response.ok) {
+          throw new Error("No se pudo eliminar el usuario.");
+        }
+        fetchData(); // Recargar la lista
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Error del servidor.");
+      }
     }
   };
 
@@ -80,9 +77,19 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="user-management-container">
+      {/* 4. Renderizar el modal condicionalmente */}
+      {isModalOpen && (
+        <UserModal
+          onClose={handleCloseModal}
+          onSave={handleSave}
+          existingUser={editingUser}
+        />
+      )}
+
       <div className="header-actions">
         <h1>Gestión de Usuarios</h1>
-        <button onClick={handleAddUser} className="btn-add-user">
+        {/* Actualizar onClick para abrir el modal */}
+        <button onClick={() => handleOpenModal()} className="btn-add-user">
           + Añadir Usuario
         </button>
       </div>
@@ -108,12 +115,14 @@ const UserManagement: React.FC = () => {
                   </span>
                 </td>
                 <td className="actions-cell">
+                  {/* Actualizar onClick para editar */}
                   <button
-                    onClick={() => handleEditUser(user)}
+                    onClick={() => handleOpenModal(user)}
                     className="btn-edit"
                   >
                     Editar
                   </button>
+                  {/* Actualizar onClick para eliminar */}
                   <button
                     onClick={() => handleDeleteUser(user.id)}
                     className="btn-delete"
