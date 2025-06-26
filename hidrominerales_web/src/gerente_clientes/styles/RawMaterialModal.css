@@ -1,0 +1,420 @@
+/* Estilos para Modal de Insumos/Materias Primas */
+
+/* Overlay del modal */
+.raw-material-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: rawMaterialFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rawMaterialFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Contenido del modal */
+.raw-material-modal-content {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: rawMaterialSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rawMaterialSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header del modal */
+.raw-material-modal-header {
+  position: relative;
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+.raw-material-modal-header h2 {
+  margin: 0;
+  padding: 32px 32px 24px 32px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.raw-material-modal-header h2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 32px;
+  right: 32px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--success-color)
+  );
+}
+
+/* Botón de cerrar */
+.raw-material-modal-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--secondary-color);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.raw-material-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  transform: rotate(90deg);
+}
+
+/* Formulario */
+.raw-material-modal-form {
+  padding: 32px;
+}
+
+/* Grupos de formulario */
+.raw-material-form-group {
+  margin-bottom: 24px;
+}
+
+.raw-material-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Inputs y selects mejorados */
+.raw-material-form-group input,
+.raw-material-form-group select {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: var(--dark-gray);
+  background: var(--white);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.raw-material-form-group input:focus,
+.raw-material-form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
+}
+
+.raw-material-form-group input:hover,
+.raw-material-form-group select:hover {
+  border-color: var(--primary-hover);
+}
+
+.raw-material-form-group input::placeholder {
+  color: var(--secondary-color);
+  opacity: 0.7;
+}
+
+.raw-material-form-group select:disabled {
+  background: #f8f9fa;
+  color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+/* Textarea específico para descripción */
+.raw-material-form-group textarea {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: var(--dark-gray);
+  background: var(--white);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.raw-material-form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
+}
+
+.raw-material-form-group textarea:hover {
+  border-color: var(--primary-hover);
+}
+
+.raw-material-form-group textarea::placeholder {
+  color: var(--secondary-color);
+  opacity: 0.7;
+}
+
+/* Mensaje de error */
+.raw-material-error-message {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(220, 38, 38, 0.05)
+  );
+  color: var(--danger-color);
+  padding: 16px 20px;
+  border-radius: var(--border-radius);
+  margin: 16px 0;
+  font-weight: 500;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  animation: rawMaterialShake 0.5s ease-in-out;
+}
+
+@keyframes rawMaterialShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Footer del modal */
+.raw-material-modal-footer {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--medium-gray);
+}
+
+/* Botones del modal */
+.raw-material-btn-cancel,
+.raw-material-btn-save {
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.raw-material-btn-cancel {
+  background: linear-gradient(135deg, var(--secondary-color), #4b5563);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.raw-material-btn-cancel:hover {
+  background: linear-gradient(135deg, #4b5563, #374151);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.raw-material-btn-save {
+  background: linear-gradient(135deg, var(--success-color), #059669);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.raw-material-btn-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.raw-material-btn-save:disabled {
+  background: linear-gradient(135deg, var(--secondary-color), #9ca3af);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Efecto shimmer para botones en hover */
+.raw-material-btn-cancel::before,
+.raw-material-btn-save::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.raw-material-btn-cancel:hover::before,
+.raw-material-btn-save:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.raw-material-btn-cancel:active,
+.raw-material-btn-save:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Loading state para el botón de guardar */
+.raw-material-btn-save:disabled::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--white);
+  border-radius: 50%;
+  animation: rawMaterialSpin 1s linear infinite;
+}
+
+@keyframes rawMaterialSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Campo requerido indicator */
+.raw-material-form-group.required label::after {
+  content: " *";
+  color: var(--danger-color);
+  font-weight: bold;
+}
+
+/* Estilos para campos deshabilitados */
+.raw-material-form-group input:disabled {
+  background: #f8f9fa;
+  color: var(--secondary-color);
+  cursor: not-allowed;
+  border-color: #e9ecef;
+}
+
+/* Responsive para modal */
+@media (max-width: 768px) {
+  .raw-material-modal-content {
+    width: 95%;
+    max-height: 95vh;
+    margin: 20px;
+  }
+
+  .raw-material-modal-header h2 {
+    padding: 24px 24px 20px 24px;
+    font-size: 1.5rem;
+  }
+
+  .raw-material-modal-header h2::after {
+    left: 24px;
+    right: 24px;
+  }
+
+  .raw-material-modal-close-btn {
+    top: 20px;
+    right: 20px;
+  }
+
+  .raw-material-modal-form {
+    padding: 24px;
+  }
+
+  .raw-material-modal-footer {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .raw-material-btn-cancel,
+  .raw-material-btn-save {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .raw-material-modal-header h2 {
+    padding: 20px 20px 16px 20px;
+    font-size: 1.25rem;
+  }
+
+  .raw-material-modal-header h2::after {
+    left: 20px;
+    right: 20px;
+  }
+
+  .raw-material-modal-form {
+    padding: 20px;
+  }
+
+  .raw-material-form-group input,
+  .raw-material-form-group select,
+  .raw-material-form-group textarea {
+    padding: 14px 16px;
+  }
+
+  .raw-material-modal-close-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.5rem;
+  }
+}

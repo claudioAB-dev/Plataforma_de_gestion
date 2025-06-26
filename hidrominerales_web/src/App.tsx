@@ -4,8 +4,10 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./global/navbar";
 import Login from "./login/Login";
 import VentasLayout from "./produccion/produccion";
-import AdminLayout from "./admin/AdminLayout"; // <-- 1. IMPORTAR
-import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout"; // <-- 1. IMPORTAR
+import AdminLayout from "./admin/AdminLayout";
+import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout";
+import GerenteClienteLayout from "./gerente_clientes/GerenteClienteLayout";
+
 import ErrorBoundary from "./ErrorBoundary";
 import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle"; // Importar
 
@@ -144,6 +146,14 @@ const AppContent: React.FC = () => {
                 <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
                   {/* Podemos envolverlo en un layout si queremos el sidebar visible */}
                   <ReporteDetalle />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/gerente-clientes"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 3]}>
+                  <GerenteClienteLayout />
                 </RoleProtectedRoute>
               }
             />

@@ -117,3 +117,76 @@ export interface User {
   rol_id: number;
   rol_nombre: string | null;
 }
+export interface Cliente {
+  id: number;
+  nombre: string;
+  rfc: string | null;
+  datos_contacto: string | null;
+  activo: boolean;
+}
+
+// Interfaz para el modelo MateriaPrima
+export interface MateriaPrima {
+  id: number;
+  cliente_id: number;
+  nombre: string;
+  sku: string;
+  descripcion: string | null;
+  unidad_medida: string;
+}
+
+// Interfaz para el inventario de Materia Prima
+export interface InventarioMateriaPrima {
+  id: number;
+  materia_prima_nombre: string;
+  cliente_nombre: string;
+  ubicacion_codigo: string;
+  lote_proveedor: string;
+  cantidad_actual: number;
+  fecha_caducidad: string | null;
+}
+// --- Interfaces para el Módulo de Gerente de Clientes ---
+
+export interface Cliente {
+  id: number;
+  nombre: string;
+  rfc: string | null;
+  datos_contacto: string | null;
+  activo: boolean;
+}
+
+export interface MateriaPrima {
+  id: number;
+  cliente_id: number;
+  nombre: string;
+  sku: string;
+  descripcion: string | null;
+  unidad_medida: string;
+}
+
+// --- Interfaces para el Dashboard de Inventario ---
+
+/**
+ * Representa un lote de materia prima en el inventario.
+ */
+export interface InventarioMateriaPrima {
+  id: number;
+  // Asumo que la API puede devolver estos campos directamente
+  materia_prima_nombre: string;
+  lote_proveedor: string;
+  cantidad_actual: number;
+  unidad_medida: string;
+  fecha_caducidad: string | null;
+}
+
+/**
+ * Representa un pallet de producto terminado en el inventario.
+ */
+export interface PalletTerminado {
+  id: number;
+  // Asumo una estructura similar para el producto terminado
+  producto_nombre: string;
+  lote_produccion: string;
+  cantidad_cajas: number;
+  ubicacion_codigo: string | null;
+}

@@ -301,7 +301,7 @@ class Cliente(db.Model):
     materias_primas = db.relationship('MateriaPrima', backref='cliente', lazy=True)
     
     def to_dict(self):
-        return {'id': self.id, 'nombre': self.nombre, 'rfc': self.rfc, 'activo': self.activo}
+        return {'id': self.id, 'nombre': self.nombre, 'rfc': self.rfc, 'datos_contacto': self.datos_contacto,'activo': self.activo}
 
 class MateriaPrima(db.Model):
     """ Catálogo de todas las materias primas que se manejan. """
