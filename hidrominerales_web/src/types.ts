@@ -51,6 +51,44 @@ export interface Merma {
   cantidad: number;
 }
 
+export interface ControlCalidadProceso {
+  id: number;
+  reporte_id: number;
+  hora_medicion: string | null;
+  olor: string | null;
+  sabor: string | null;
+  lampara_uv: boolean | null;
+  fugas: string | null;
+  rosca: string | null;
+  faldon: string | null;
+  inversion: string | null;
+  tq1: number | null;
+  tq2: number | null;
+  tq3: number | null;
+  media: number | null;
+  presion: number | null;
+  temperatura: number | null;
+  vol_co2: number | null;
+  saturador: number | null;
+  inspector_id: number;
+  inspector_nombre: string | null;
+}
+
+export interface InspeccionSelloLateral {
+  id: number;
+  reporte_id: number;
+  hora_medicion: string | null;
+  profundidad_superior_1: number | null;
+  profundidad_superior_2: number | null;
+  profundidad_superior_3: number | null;
+  profundidad_superior_4: number | null;
+  sello_lateral_1: number | null;
+  sello_lateral_2: number | null;
+  sello_lateral_3: number | null;
+  sello_lateral_4: number | null;
+  realizo_id: number;
+  realizo_nombre: string | null;
+}
 // Interfaz principal corregida para coincidir con el to_dict() del modelo ReporteProduccion
 export interface ReporteProduccion {
   id: number; // Corregido de 'id_reporte'
@@ -69,6 +107,8 @@ export interface ReporteProduccion {
   pallets?: PalletTerminado[];
   paros?: ParoLinea[];
   mermas?: Merma[];
+  controles_calidad?: ControlCalidadProceso[];
+  inspecciones_sello?: InspeccionSelloLateral[];
 }
 
 export interface User {

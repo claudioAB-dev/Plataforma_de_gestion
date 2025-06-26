@@ -32,11 +32,25 @@ class Producto(db.Model):
     co2_nominal = db.Column(db.Integer, nullable=True) 
     charolas_por_tarima = db.Column(db.Integer)
 
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
+    cliente = db.relationship('Cliente', back_populates='productos')
+
     activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.TIMESTAMP, server_default=func.now())
     updated_at = db.Column(db.TIMESTAMP, server_default=func.now(), onupdate=func.now())
-    def to_dict(self): return {'id': self.id, 'nombre': self.nombre, 'presentacion': self.presentacion, 'sku': self.sku,'co2_nominal': self.co2_nominal, 'charolas_por_tarima': self.charolas_por_tarima, 'activo': self.activo}
-
+    
+    def to_dict(self):
+        return {
+            'id': self.id, 
+            'nombre': self.nombre, 
+            'presentacion': self.presentacion, 
+            'sku': self.sku,
+            'co2_nominal': self.co2_nominal, 
+            'charolas_por_tarima': self.charolas_por_tarima,
+            'cliente_id': self.cliente_id,  # Agregado
+            'cliente_nombre': self.cliente.nombre if self.cliente else None, # Opcional, pero útil
+            'activo': self.activo
+        }
 
 # --- Enums (sin cambios) ---
 class EstadoProduccionEnum(enum.Enum):
@@ -77,6 +91,7 @@ class ReporteProduccion(db.Model):
         default=EstadoProduccionEnum.EN_PROCESO.value # Usamos .value también en el default
     )    
     fecha_caducidad = db.Column(db.Date, nullable=True)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
 
     created_at = db.Column(db.TIMESTAMP, server_default=func.now())
     updated_at = db.Column(db.TIMESTAMP, server_default=func.now(), onupdate=func.now())
@@ -98,7 +113,7 @@ class ReporteProduccion(db.Model):
             'lote': self.lote,
             'produccion_objetivo': self.produccion_objetivo,
             'fecha_caducidad': self.fecha_caducidad.isoformat() if self.fecha_caducidad else None,
-        
+            'cliente_id': self.cliente_id,
             'hora_arranque':  self.hora_arranque.isoformat() if self.hora_arranque else None,
             'hora_termino': self.hora_termino.isoformat() if self.hora_termino else None,
             
@@ -117,16 +132,17 @@ class ReporteProduccion(db.Model):
             data['inspecciones_sello'] = [i.to_dict() for i in self.inspecciones_sello]
             # --- FIN DE LA MODIFICACIÓN ---
         return data
-        return data
 
 class PalletTerminado(db.Model):
     __tablename__ = 'pallets_terminados'
     id = db.Column(db.Integer, primary_key=True)
     reporte_id = db.Column(db.Integer, db.ForeignKey('reportes_produccion.id'), nullable=False)
     numero_pallet = db.Column(db.Integer, nullable=False)
+    ubicacion_id = db.Column(db.Integer, db.ForeignKey('ubicaciones.id'), nullable=True)
+
     cantidad_charolas = db.Column(db.Integer, nullable=False)
     hora_registro = db.Column(db.Time, nullable=False)
-    def to_dict(self): return {'id': self.id, 'reporte_id': self.reporte_id, 'numero_pallet': self.numero_pallet, 'cantidad_charolas': self.cantidad_charolas, 'hora_registro': self.hora_registro.strftime('%H:%M:%S') if self.hora_registro else None}
+    def to_dict(self): return {'id': self.id, 'reporte_id': self.reporte_id, 'numero_pallet': self.numero_pallet, 'ubicacion_id': self.ubicacion_id,'cantidad_charolas': self.cantidad_charolas, 'hora_registro': self.hora_registro.strftime('%H:%M:%S') if self.hora_registro else None}
 
 class ParoLinea(db.Model):
     __tablename__ = 'paros_linea'
@@ -143,6 +159,8 @@ class Merma(db.Model):
     __tablename__ = 'mermas'
     id = db.Column(db.Integer, primary_key=True)
     reporte_id = db.Column(db.Integer, db.ForeignKey('reportes_produccion.id'), nullable=False)
+    materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'), nullable=False)
+
     tipo_merma = db.Column(
         SQLAlchemyEnum(
             TipoMermaEnum,
@@ -158,6 +176,7 @@ class Merma(db.Model):
             'id': self.id,
             'reporte_id': self.reporte_id,
             # FIX: Serialización segura para el campo Enum 'tipo_merma'
+            'materia_prima_id': self.materia_prima_id,
             'tipo_merma': self.tipo_merma.value if isinstance(self.tipo_merma, enum.Enum) else self.tipo_merma,
             'cantidad': self.cantidad
         }
@@ -267,3 +286,110 @@ class InspeccionSelloLateral(db.Model):
             'realizo_id': self.realizo_id,
             'realizo_nombre': self.realizo.nombre if self.realizo else None
         }
+    # en models.py
+
+class Cliente(db.Model):
+    __tablename__ = 'clientes'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(150), unique=True, nullable=False)
+    rfc = db.Column(db.String(13), unique=True)
+    datos_contacto = db.Column(db.Text)
+    activo = db.Column(db.Boolean, default=True)
+
+    # Relaciones inversas
+    productos = db.relationship('Producto', back_populates='cliente')
+    materias_primas = db.relationship('MateriaPrima', backref='cliente', lazy=True)
+    
+    def to_dict(self):
+        return {'id': self.id, 'nombre': self.nombre, 'rfc': self.rfc, 'activo': self.activo}
+
+class MateriaPrima(db.Model):
+    """ Catálogo de todas las materias primas que se manejan. """
+    __tablename__ = 'materias_primas'
+    id = db.Column(db.Integer, primary_key=True)
+    # De qué cliente es esta materia prima.
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
+    
+    nombre = db.Column(db.String(255), nullable=False)
+    sku = db.Column(db.String(50), unique=True)
+    descripcion = db.Column(db.Text)
+    unidad_medida = db.Column(db.String(50)) # Ej: Unidades, Litros, Kilos
+    stock_minimo_alerta = db.Column(db.Numeric(10, 2), default=0)
+
+    # Relación inversa
+    inventario = db.relationship('InventarioMateriaPrima', backref='materia_prima', lazy=True)
+
+    def to_dict(self):
+        return {'id': self.id, 'cliente_id': self.cliente_id, 'nombre': self.nombre, 'sku': self.sku, 'unidad_medida': self.unidad_medida}
+
+class Ubicacion(db.Model):
+    """ Representa una ubicación física en el almacén. """
+    __tablename__ = 'ubicaciones'
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(50), unique=True, nullable=False) # Ej: A01-S03-N02 (Escaneable)
+    zona = db.Column(db.String(100)) # Ej: Materia Prima, Producto Terminado, Cuarentena
+    pasillo = db.Column(db.String(50))
+    estante = db.Column(db.String(50))
+    nivel = db.Column(db.String(50))
+    activa = db.Column(db.Boolean, default=True)
+
+    def to_dict(self):
+        return {'id': self.id, 'codigo': self.codigo, 'zona': self.zona, 'pasillo': self.pasillo, 'estante': self.estante, 'nivel': self.nivel}
+
+
+# --- NUEVOS MODELOS DE INVENTARIO ---
+
+class InventarioMateriaPrima(db.Model):
+    """
+    Controla el stock real de lotes de materia prima en ubicaciones específicas.
+    Esta es una de las tablas más importantes.
+    """
+    __tablename__ = 'inventario_materias_primas'
+    id = db.Column(db.Integer, primary_key=True)
+    materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'), nullable=False)
+    ubicacion_id = db.Column(db.Integer, db.ForeignKey('ubicaciones.id'), nullable=False)
+    
+    lote_proveedor = db.Column(db.String(100))
+    cantidad_actual = db.Column(db.Numeric(10, 2), nullable=False, default=0)
+    fecha_recepcion = db.Column(db.Date, server_default=func.now())
+    fecha_caducidad = db.Column(db.Date, nullable=True)
+    
+    # Relaciones para acceder fácilmente a los objetos
+    ubicacion = db.relationship('Ubicacion')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'materia_prima_id': self.materia_prima_id,
+            'materia_prima_nombre': self.materia_prima.nombre,
+            'cliente_id': self.materia_prima.cliente_id,
+            'cliente_nombre': self.materia_prima.cliente.nombre,
+            'ubicacion_id': self.ubicacion_id,
+            'ubicacion_codigo': self.ubicacion.codigo,
+            'lote_proveedor': self.lote_proveedor,
+            'cantidad_actual': float(self.cantidad_actual),
+            'fecha_caducidad': self.fecha_caducidad.isoformat() if self.fecha_caducidad else None
+        }
+
+class MovimientoInventario(db.Model):
+    """ (Recomendado) Tabla de auditoría para cada movimiento de inventario. """
+    __tablename__ = 'movimientos_inventario'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Puede ser un movimiento de materia prima o de producto terminado (pallet)
+    materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'), nullable=True)
+    pallet_id = db.Column(db.Integer, db.ForeignKey('pallets_terminados.id'), nullable=True)
+    
+    tipo_movimiento = db.Column(db.String(50), nullable=False) # Ej: Recepción, Consumo a Producción, Despacho, Ajuste, Traslado
+    cantidad = db.Column(db.Numeric(10, 2), nullable=False)
+    
+    ubicacion_origen_id = db.Column(db.Integer, db.ForeignKey('ubicaciones.id'), nullable=True)
+    ubicacion_destino_id = db.Column(db.Integer, db.ForeignKey('ubicaciones.id'), nullable=True)
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, server_default=func.now())
+    
+    # Relaciones
+    user = db.relationship('User')
+    materia_prima = db.relationship('MateriaPrima')
+    pallet = db.relationship('PalletTerminado')

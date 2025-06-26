@@ -7,15 +7,18 @@ import type {
   PalletTerminado,
   ParoLinea,
   Merma,
-} from "../../types"; // Asegúrate que tus tipos sean correctos
-import "../styles/Reportes.css"; // Reutilizamos los estilos
+  ControlCalidadProceso,
+  InspeccionSelloLateral,
+} from "../../types";
+import "../styles/Reportes.css";
 
-const BOTELLAS_POR_CHAROLA = 60; // Podría venir del producto en el futuro
+const BOTELLAS_POR_CHAROLA = 60;
 
 const ReporteDetalle: React.FC = () => {
   const [report, setReport] = useState<ReporteProduccion | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"general" | "calidad">("general"); // Estado para la pestaña
   const { reporteId } = useParams<{ reporteId: string }>();
   const navigate = useNavigate();
 
@@ -52,7 +55,6 @@ const ReporteDetalle: React.FC = () => {
     fetchReportDetails();
   }, [reporteId]);
 
-  // Cálculos memorizados para no recalcular en cada render
   const { totalCharolas, totalBotellas, totalMinutosParo, totalMerma } =
     useMemo(() => {
       if (!report) {
@@ -105,15 +107,8 @@ const ReporteDetalle: React.FC = () => {
     );
   }
 
-  return (
-    <div className="reporte-detalle-container">
-      <button onClick={() => navigate(-1)} className="back-link">
-        &larr; Volver a la lista
-      </button>
-
-      <h1>Detalle del Reporte de Producción #{report.id}</h1>
-
-      {/* SECCIÓN DE INFORMACIÓN GENERAL */}
+  const renderGeneralTab = () => (
+    <div className="tab-content">
       <section className="detalle-seccion">
         <h2>Información General</h2>
         <div className="info-grid">
@@ -152,7 +147,6 @@ const ReporteDetalle: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN DE RESUMEN DE PRODUCCIÓN */}
       <section className="detalle-seccion">
         <h2>Resumen de Producción</h2>
         <div className="info-grid">
@@ -179,7 +173,6 @@ const ReporteDetalle: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN DE PALLETS */}
       <section className="detalle-seccion">
         <h2>Pallets Registrados</h2>
         <div className="table-responsive">
@@ -210,7 +203,6 @@ const ReporteDetalle: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN DE PAROS DE LÍNEA */}
       <section className="detalle-seccion">
         <h2>Paros de Línea</h2>
         <div className="table-responsive">
@@ -241,7 +233,6 @@ const ReporteDetalle: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN DE MERMA */}
       <section className="detalle-seccion">
         <h2>Merma Registrada</h2>
         <div className="table-responsive">
@@ -269,6 +260,136 @@ const ReporteDetalle: React.FC = () => {
           </table>
         </div>
       </section>
+    </div>
+  );
+
+  const renderCalidadTab = () => (
+    <div className="tab-content">
+      <section className="detalle-seccion">
+        <h2>Controles de Calidad en Proceso</h2>
+        <div className="table-responsive">
+          <table className="reportes-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Inspector</th>
+                <th>Olor/Sabor</th>
+                <th>Lámpara UV</th>
+                <th>Fugas</th>
+                <th>Vol. CO₂</th>
+                <th>Presión</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.controles_calidad &&
+              report.controles_calidad.length > 0 ? (
+                report.controles_calidad.map(
+                  (control: ControlCalidadProceso) => (
+                    <tr key={control.id}>
+                      <td>{control.hora_medicion}</td>
+                      <td>{control.inspector_nombre || "N/A"}</td>
+                      <td>
+                        {control.olor}/{control.sabor}
+                      </td>
+                      <td>{control.lampara_uv ? "Sí" : "No"}</td>
+                      <td>{control.fugas}</td>
+                      <td>{control.vol_co2 ?? "N/A"}</td>
+                      <td>{control.presion ?? "N/A"}</td>
+                    </tr>
+                  )
+                )
+              ) : (
+                <tr>
+                  <td colSpan={7}>
+                    No hay registros de control de calidad en proceso.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="detalle-seccion">
+        <h2>Inspecciones de Sello Lateral</h2>
+        <div className="table-responsive">
+          <table className="reportes-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Realizó</th>
+                <th>Prof. Sup. (1/2/3/4)</th>
+                <th>Sello Lat. (1/2/3/4)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.inspecciones_sello &&
+              report.inspecciones_sello.length > 0 ? (
+                report.inspecciones_sello.map(
+                  (inspeccion: InspeccionSelloLateral) => (
+                    <tr key={inspeccion.id}>
+                      <td>{inspeccion.hora_medicion}</td>
+                      <td>{inspeccion.realizo_nombre || "N/A"}</td>
+                      <td>
+                        {[
+                          inspeccion.profundidad_superior_1,
+                          inspeccion.profundidad_superior_2,
+                          inspeccion.profundidad_superior_3,
+                          inspeccion.profundidad_superior_4,
+                        ].join(" / ")}
+                      </td>
+                      <td>
+                        {[
+                          inspeccion.sello_lateral_1,
+                          inspeccion.sello_lateral_2,
+                          inspeccion.sello_lateral_3,
+                          inspeccion.sello_lateral_4,
+                        ].join(" / ")}
+                      </td>
+                    </tr>
+                  )
+                )
+              ) : (
+                <tr>
+                  <td colSpan={4}>
+                    No hay registros de inspección de sello lateral.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+
+  return (
+    <div className="reporte-detalle-container">
+      <button onClick={() => navigate(-1)} className="back-link">
+        &larr; Volver a la lista
+      </button>
+
+      <h1>Detalle del Reporte de Producción #{report.id}</h1>
+
+      {/* --- INICIO DE LA MODIFICACIÓN: Pestañas de navegación --- */}
+      <div className="detalle-tabs">
+        <button
+          className={`tab-button ${activeTab === "general" ? "active" : ""}`}
+          onClick={() => setActiveTab("general")}
+        >
+          General
+        </button>
+        <button
+          className={`tab-button ${activeTab === "calidad" ? "active" : ""}`}
+          onClick={() => setActiveTab("calidad")}
+        >
+          Calidad
+        </button>
+      </div>
+      {/* --- FIN DE LA MODIFICACIÓN --- */}
+
+      {/* Renderizado condicional del contenido de la pestaña */}
+      {activeTab === "general" ? renderGeneralTab() : renderCalidadTab()}
     </div>
   );
 };
