@@ -7,7 +7,7 @@ import VentasLayout from "./produccion/produccion";
 import AdminLayout from "./admin/AdminLayout";
 import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayout";
 import GerenteClienteLayout from "./gerente_clientes/GerenteClienteLayout";
-
+import GerenteAlmacenLayout from "./gerente_almacen/GerenteAlmacenLayout";
 import ErrorBoundary from "./ErrorBoundary";
 import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle"; // Importar
 
@@ -154,6 +154,14 @@ const AppContent: React.FC = () => {
               element={
                 <RoleProtectedRoute allowedRoles={[1, 3]}>
                   <GerenteClienteLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/gerente-almacen"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 6]}>
+                  <GerenteAlmacenLayout />
                 </RoleProtectedRoute>
               }
             />

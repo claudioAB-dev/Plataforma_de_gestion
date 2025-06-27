@@ -127,6 +127,7 @@ export interface Cliente {
 
 // Interfaz para el modelo MateriaPrima
 export interface MateriaPrima {
+  cliente_nombre: string;
   id: number;
   cliente_id: number;
   nombre: string;
@@ -189,4 +190,27 @@ export interface PalletTerminado {
   lote_produccion: string;
   cantidad_cajas: number;
   ubicacion_codigo: string | null;
+}
+// --- Interfaces para el Dashboard de Inventario Consolidado (Gerente de Almacén) ---
+export interface InventarioMateriaPrimaConsolidado {
+  nombre: string;
+  sku: string;
+  unidad_medida: string;
+  stock_total: number;
+}
+
+export interface InventarioProductoTerminadoConsolidado {
+  nombre: string;
+  sku: string;
+  pallets_totales: number;
+  charolas_totales: number;
+}
+export interface MovimientoInventario {
+  id: number;
+  materia_prima_nombre: string | null;
+  user_nombre: string | null;
+  tipo_movimiento: string;
+  cantidad: number;
+  timestamp: string;
+  // Añadir otros campos del modelo si se necesitaran en el frontend
 }

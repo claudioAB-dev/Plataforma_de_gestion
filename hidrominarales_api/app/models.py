@@ -379,7 +379,8 @@ class MovimientoInventario(db.Model):
     # Puede ser un movimiento de materia prima o de producto terminado (pallet)
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'), nullable=True)
     pallet_id = db.Column(db.Integer, db.ForeignKey('pallets_terminados.id'), nullable=True)
-    
+    reporte_id = db.Column(db.Integer, db.ForeignKey('reportes_produccion.id'), nullable=True)
+
     tipo_movimiento = db.Column(db.String(50), nullable=False) # Ej: Recepción, Consumo a Producción, Despacho, Ajuste, Traslado
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     
@@ -393,3 +394,21 @@ class MovimientoInventario(db.Model):
     user = db.relationship('User')
     materia_prima = db.relationship('MateriaPrima')
     pallet = db.relationship('PalletTerminado')
+    reporte = db.relationship('ReporteProduccion') # Nueva relación
+
+    # --- CAMBIO: Método de serialización mejorado ---
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'materia_prima_id': self.materia_prima_id,
+            'materia_prima_nombre': self.materia_prima.nombre if self.materia_prima else None,
+            'pallet_id': self.pallet_id,
+            'reporte_id': self.reporte_id,
+            'tipo_movimiento': self.tipo_movimiento,
+            'cantidad': float(self.cantidad) if self.cantidad is not None else 0,
+            'ubicacion_origen_id': self.ubicacion_origen_id,
+            'ubicacion_destino_id': self.ubicacion_destino_id,
+            'user_id': self.user_id,
+            'user_nombre': self.user.nombre if self.user else None,
+            'timestamp': self.timestamp.isoformat() if self.timestamp else None,
+        }
