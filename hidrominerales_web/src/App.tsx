@@ -9,7 +9,8 @@ import GerenteProduccionLayout from "./gerente_produccion/GerenteProduccionLayou
 import GerenteClienteLayout from "./gerente_clientes/GerenteClienteLayout";
 import GerenteAlmacenLayout from "./gerente_almacen/GerenteAlmacenLayout";
 import ErrorBoundary from "./ErrorBoundary";
-import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle"; // Importar
+import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle";
+import HomePage from "./home/HomePage";
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -56,36 +57,6 @@ const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
   return <Navigate to="/unauthorized" replace />;
 };
 
-const HomePage: React.FC = () => {
-  const { user, logout } = useAuth();
-
-  return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1>¡Bienvenido, {user?.nombre}!</h1>
-      <p>
-        Tu rol es: <strong>{user?.rol_nombre}</strong> (ID: {user?.rol_id})
-      </p>
-      <nav>
-        {user?.rol_id === 1 && (
-          <a href="/admin" style={{ margin: "0 10px" }}>
-            Panel Admin
-          </a>
-        )}
-        {(user?.rol_id === 2 ||
-          user?.rol_id === 1 ||
-          user?.rol_id === 4 ||
-          user?.rol_id === 5) && (
-          <a href="/produccion" style={{ margin: "0 10px" }}>
-            Producción
-          </a>
-        )}
-      </nav>
-      <br />
-      <button onClick={logout}>Cerrar Sesión</button>
-    </div>
-  );
-};
-
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -109,7 +80,7 @@ const AppContent: React.FC = () => {
             <Route
               path="/"
               element={
-                <RoleProtectedRoute allowedRoles={[1, 2, 4, 5]}>
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8]}>
                   <HomePage />
                 </RoleProtectedRoute>
               }
@@ -117,8 +88,7 @@ const AppContent: React.FC = () => {
             <Route
               path="/admin"
               element={
-                <RoleProtectedRoute allowedRoles={[1]}>
-                  {/* 2. REEMPLAZAR AdminPage CON AdminLayout */}
+                <RoleProtectedRoute allowedRoles={[1, 2]}>
                   <AdminLayout />
                 </RoleProtectedRoute>
               }
@@ -144,7 +114,6 @@ const AppContent: React.FC = () => {
               path="/gerente-produccion/reportes/:reporteId"
               element={
                 <RoleProtectedRoute allowedRoles={[1, 2, 4]}>
-                  {/* Podemos envolverlo en un layout si queremos el sidebar visible */}
                   <ReporteDetalle />
                 </RoleProtectedRoute>
               }
@@ -152,7 +121,7 @@ const AppContent: React.FC = () => {
             <Route
               path="/gerente-clientes"
               element={
-                <RoleProtectedRoute allowedRoles={[1, 3]}>
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 8]}>
                   <GerenteClienteLayout />
                 </RoleProtectedRoute>
               }
@@ -160,7 +129,7 @@ const AppContent: React.FC = () => {
             <Route
               path="/gerente-almacen"
               element={
-                <RoleProtectedRoute allowedRoles={[1, 6]}>
+                <RoleProtectedRoute allowedRoles={[1, 6, 8]}>
                   <GerenteAlmacenLayout />
                 </RoleProtectedRoute>
               }
