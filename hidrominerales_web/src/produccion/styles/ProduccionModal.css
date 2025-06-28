@@ -416,3 +416,33 @@
   font-weight: bold;
   color: #333;
 }
+/* Agrega al final de claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-fcc48bb06575d392a80d27919f2a68d8a85432ba/hidrominerales_web/src/produccion/styles/ProduccionModal.css */
+
+.merma-display {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.merma-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.merma-item:last-child {
+  border-bottom: none;
+}
+
+.merma-item span:first-child {
+  color: #666;
+}
+
+.merma-item span:last-child {
+  font-weight: bold;
+  color: #333;
+}

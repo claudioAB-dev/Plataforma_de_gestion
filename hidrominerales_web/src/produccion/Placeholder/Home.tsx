@@ -5,8 +5,6 @@ import LineStoppageModal from "../components/LineStoppageModal";
 import RegisterMermaModal from "../components/RegisterMermaModal";
 import ProgressChart from "../components/ProgressChart";
 import "../styles/ProduccionDashboard.css";
-
-// Importamos los tipos desde el archivo central para mantener la consistencia.
 import type { ReporteProduccion } from "../../types";
 
 const BOTELLAS_POR_CHAROLA = 60;
@@ -25,7 +23,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:5001/api/reportes?linea=${line}&estado=En Proceso&details=true`
+        `http://127.0.0.1:5001/api/reportes?linea=${line}&estado=En Proceso`
       );
       if (!response.ok) throw new Error("Error al buscar reporte activo");
 
@@ -103,6 +101,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
     );
   }
 
+  // Cálculos de producción
   const totalCharolas = (activeReport.pallets || []).reduce(
     (sum, p) => sum + p.cantidad_charolas,
     0
@@ -120,7 +119,16 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
 
   return (
     <>
-      {/* Modales (sin cambios) */}
+      {/* Se pasa `currentMermas` al modal para que conozca el estado actual */}
+      <RegisterMermaModal
+        isOpen={showMermaModal}
+        onClose={() => setShowMermaModal(false)}
+        onSave={handleModalSave}
+        reporteId={activeReport.id}
+        currentMermas={activeReport.mermas || []}
+      />
+
+      {/* Otros modales no cambian */}
       <RegisterPalletModal
         isOpen={showPalletModal}
         onClose={() => setShowPalletModal(false)}
@@ -133,13 +141,6 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
         onClose={() => setShowStoppageModal(false)}
         onSave={handleModalSave}
         reporteId={activeReport.id}
-      />
-      <RegisterMermaModal
-        isOpen={showMermaModal}
-        onClose={() => setShowMermaModal(false)}
-        onSave={handleModalSave}
-        reporteId={activeReport.id}
-        currentMerma={undefined}
       />
 
       <div className="dashboard-container">
@@ -162,8 +163,8 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
           </button>
         </header>
 
-        {/* --- INICIO DE LA MODIFICACIÓN: Grid con tarjetas de detalle --- */}
         <div className="dashboard-grid">
+          {/* Tarjeta de Progreso (sin cambios) */}
           <div className="dashboard-card progress-card main-progress">
             <h3>Progreso del Turno</h3>
             <ProgressChart
@@ -172,6 +173,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
             />
           </div>
 
+          {/* Tarjeta de Pallets (sin cambios) */}
           <div className="dashboard-card summary-card">
             <h3>Historial de Pallets</h3>
             <div className="details-list">
@@ -197,6 +199,7 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
             </button>
           </div>
 
+          {/* Tarjeta de Paros (sin cambios) */}
           <div className="dashboard-card summary-card">
             <h3>Paros de Línea</h3>
             <div className="summary-value">{totalMinutosParo}</div>
@@ -209,30 +212,33 @@ const Home: React.FC<{ selectedLine: number }> = ({ selectedLine }) => {
             </button>
           </div>
 
+          {/* --- INICIO DE LA MODIFICACIÓN: Tarjeta de Merma Mejorada --- */}
           <div className="dashboard-card summary-card">
             <h3>Detalle de Merma</h3>
-            <div className="details-list">
+            <div className="merma-display">
               {(activeReport.mermas || []).length > 0 ? (
                 (activeReport.mermas || []).map((merma) => (
-                  <div key={merma.id} className="details-list-item">
+                  <div key={merma.id} className="merma-item">
                     <span>{merma.tipo_merma}</span>
-                    <strong>{merma.cantidad} uds.</strong>
+                    <span>{merma.cantidad.toLocaleString()} uds.</span>
                   </div>
                 ))
               ) : (
                 <p className="no-data">No hay merma registrada.</p>
               )}
             </div>
-            <div className="summary-total">Total: {totalMerma} uds.</div>
+            <div className="summary-total">
+              Total: {totalMerma.toLocaleString()} uds.
+            </div>
             <button
               className="btn-action btn-merma"
               onClick={() => setShowMermaModal(true)}
             >
-              + Registrar Merma
+              +/- Ajustar Merma
             </button>
           </div>
+          {/* --- FIN DE LA MODIFICACIÓN --- */}
         </div>
-        {/* --- FIN DE LA MODIFICACIÓN --- */}
       </div>
     </>
   );

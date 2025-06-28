@@ -192,21 +192,63 @@ def add_paro_to_reporte(reporte_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Error al añadir el paro', 'error': str(e)}), 500
-    
+# claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-fcc48bb06575d392a80d27919f2a68d8a85432ba/hidrominarales_api/app/api/reports.py
+
 @api_bp.route('/reportes/<int:reporte_id>/mermas', methods=['POST'])
 def add_merma_to_reporte(reporte_id):
-    """Añade merma a un reporte específico."""
-    ReporteProduccion.query.get_or_404(reporte_id)
+    """
+    Añade merma a un reporte específico.
+    Puede manejar un solo objeto de merma o una lista de objetos.
+    """
+    reporte = ReporteProduccion.query.get_or_404(reporte_id)
     data = request.get_json()
-    try:
-        nueva_merma = Merma(
-            reporte_id=reporte_id,
-            tipo_merma=data['tipo_merma'],
-            cantidad=data['cantidad']
-        )
-        db.session.add(nueva_merma)
-        db.session.commit()
-        return jsonify(nueva_merma.to_dict()), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': 'Error al añadir la merma', 'error': str(e)}), 500
+
+    # Si se envía una lista de mermas, la procesamos en lote
+    if isinstance(data, list):
+        try:
+            for item in data:
+                tipo_merma_str = item.get('tipo_merma')
+                cantidad = item.get('cantidad')
+                if not tipo_merma_str or cantidad is None:
+                    continue # Ignorar items inválidos
+
+                # Buscamos si ya existe merma de ese tipo en el reporte
+                merma_existente = Merma.query.filter_by(
+                    reporte_id=reporte_id,
+                    tipo_merma=tipo_merma_str
+                ).first()
+
+                if merma_existente:
+                    # Si existe, sumamos la nueva cantidad
+                    merma_existente.cantidad += int(cantidad)
+                else:
+                    # Si no existe, creamos un nuevo registro
+                    nueva_merma = Merma(
+                        reporte_id=reporte_id,
+                        tipo_merma=tipo_merma_str,
+                        cantidad=int(cantidad)
+                    )
+                    db.session.add(nueva_merma)
+            
+            db.session.commit()
+            return jsonify({'message': 'Mermas actualizadas correctamente'}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'message': 'Error al procesar el lote de mermas', 'error': str(e)}), 500
+
+    # Lógica original para manejar un solo objeto (retrocompatibilidad)
+    elif isinstance(data, dict):
+        try:
+            nueva_merma = Merma(
+                reporte_id=reporte_id,
+                tipo_merma=data['tipo_merma'],
+                cantidad=data['cantidad']
+            )
+            db.session.add(nueva_merma)
+            db.session.commit()
+            return jsonify(nueva_merma.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'message': 'Error al añadir la merma', 'error': str(e)}), 500
+            
+    return jsonify({'message': 'Formato de datos inválido. Se esperaba un objeto o una lista de objetos.'}), 400

@@ -4,8 +4,7 @@ import type {
   InventarioMateriaPrima,
   PalletTerminado,
 } from "../../types";
-// Asumimos que también existe un tipo PalletTerminado similar
-import "../../gerente_produccion/styles/Reportes.css";
+import "../styles/InventoryDashboard.css";
 
 const InventoryDashboard: React.FC = () => {
   const [clients, setClients] = useState<Cliente[]>([]);
@@ -174,20 +173,18 @@ const InventoryDashboard: React.FC = () => {
               <table className="reportes-table">
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Lote Producción</th>
-                    <th>Cantidad (Cajas)</th>
-                    <th>Ubicación</th>
+                    <th>Pallet</th>
+                    <th>Hora Registro</th>
+                    <th>Cantidad (Charolas)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {inventoryPT.length > 0 ? (
                     inventoryPT.map((item) => (
                       <tr key={item.id}>
-                        <td>{item.producto_nombre}</td>
-                        <td>{item.lote_produccion}</td>
-                        <td>{item.cantidad_cajas}</td>
-                        <td>{item.ubicacion_codigo || "N/A"}</td>
+                        <td>{`Pallet #${item.numero_pallet}`}</td>
+                        <td>{item.hora_registro}</td>
+                        <td>{item.cantidad_charolas}</td>
                       </tr>
                     ))
                   ) : (

@@ -1,0 +1,67 @@
+.merma-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.merma-item-control {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.merma-item-control label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.merma-stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stepper-btn {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.stepper-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(107, 114, 128, 0.3);
+}
+
+.stepper-btn:active {
+  transform: scale(0.98);
+}
+
+.stepper-input {
+  width: 80px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  color: #1d4ed8;
+  margin: 0 0.5rem;
+}
+
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
