@@ -17,6 +17,7 @@ export interface User {
 // Interfaz corregida para coincidir con el to_dict() del modelo Producto
 export interface Producto {
   id: number;
+  cliente_id: number;
   nombre: string;
   presentacion: string;
   sku: string;
@@ -27,6 +28,7 @@ export interface Producto {
 // Interfaz corregida para coincidir con el to_dict() del modelo PalletTerminado
 export interface PalletTerminado {
   id: number;
+  cliente_id: number;
   reporte_id: number;
   numero_pallet: number;
   cantidad_charolas: number; // Propiedad que faltaba

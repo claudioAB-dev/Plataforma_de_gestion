@@ -83,39 +83,41 @@ def create_reporte():
     """Crea un nuevo ReporteProduccion."""
     data = request.get_json()
     
-    # --- INICIO DE LA CORRECCIÓN ---
-    # Añadir 'turno' a la lista de campos requeridos.
-    required_fields = ["turno", "lote", "produccion_objetivo", "linea_produccion", "producto_id", "operador_engargolado_id", "responsable_linea_id"]
-    # --- FIN DE LA CORRECCIÓN ---
-
+    required_fields = [
+        "turno", "lote", "produccion_objetivo", "linea_produccion",
+        "producto_id", "operador_engargolado_id", "responsable_linea_id", "cliente_id"
+    ]
     if not data or not all(field in data for field in required_fields):
         return jsonify({'message': 'Faltan campos requeridos en la solicitud.'}), 400
 
     try:
         nuevo_reporte = ReporteProduccion(
-            # --- INICIO DE LA CORRECCIÓN ---
-            # Añadir el campo 'turno' al crear el objeto.
             turno=data.get('turno'),
-            # --- FIN DE LA CORRECCIÓN ---
             producto_id=data.get('producto_id'),
             lote=data.get('lote'),
             produccion_objetivo=data.get('produccion_objetivo'),
             linea=data.get('linea_produccion'),
             operador_engargolado_id=data.get('operador_engargolado_id'),
             responsable_linea_id=data.get('responsable_linea_id'),
+            cliente_id=data.get('cliente_id'),  
             hora_arranque=datetime.now().time(),
             fecha_produccion=datetime.now().date(),
             estado=EstadoProduccionEnum.EN_PROCESO.value
         )
         db.session.add(nuevo_reporte)
         db.session.commit()
+        print("Lote recibido:", data.get('lote'))
+        print("Datos recibidos:", data)
         return jsonify(nuevo_reporte.to_dict()), 201
 
     except IntegrityError:
+        print("Datos recibidos:", data)
         db.session.rollback()
         return jsonify({'message': 'El Lote de Producción ya existe. Por favor, ingrese uno diferente.'}), 409
     
     except Exception as e:
+        print("Datos recibidos:", data)
+
         db.session.rollback()
         print(f"Error inesperado en create_reporte: {e}") 
         return jsonify({'message': 'Ocurrió un error inesperado en el servidor.'}), 500

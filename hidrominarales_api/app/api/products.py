@@ -7,6 +7,8 @@ from datetime import datetime
 @api_bp.route('/productos', methods=['POST'])
 def create_producto():
     data = request.get_json()
+    if "co2Nominal" in data:
+        data["co2_nominal"] = data.pop("co2Nominal")
     nuevo_producto = Producto(**data)
     db.session.add(nuevo_producto)
     db.session.commit()

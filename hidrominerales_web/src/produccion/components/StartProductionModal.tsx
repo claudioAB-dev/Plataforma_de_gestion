@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProduccionModal.css";
-
-interface Product {
-  id: number;
-  nombre: string;
-}
-interface User {
-  id: number;
-  nombre: string;
-}
+import type { Cliente, Producto, User } from "../../types";
 
 interface StartProductionModalProps {
   isOpen: boolean;
@@ -23,7 +15,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
   onSave,
   lineaProduccion,
 }) => {
-  const [productos, setProductos] = useState<Product[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [lote, setLote] = useState("");
   const [productoId, setProductoId] = useState("");
@@ -33,21 +25,25 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
   const [responsableId, setResponsableId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clienteId, setClienteId] = useState("");
   useEffect(() => {
     if (isOpen) {
       const fetchInitialData = async () => {
         try {
-          const [productsRes, usersRes] = await Promise.all([
+          const [productsRes, usersRes, clientesRes] = await Promise.all([
             fetch("http://127.0.0.1:5001/api/productos"),
             fetch("http://127.0.0.1:5001/api/users"),
+            fetch("http://127.0.0.1:5001/api/clientes"),
           ]);
-          if (!productsRes.ok || !usersRes.ok)
+          if (!productsRes.ok || !usersRes.ok || !clientesRes.ok)
             throw new Error("Error al cargar datos iniciales");
           const productsData = await productsRes.json();
           const usersData = await usersRes.json();
+          const clientesData = await clientesRes.json();
           setProductos(productsData);
           setUsers(usersData);
+          setClientes(clientesData);
         } catch (err) {
           setError(err instanceof Error ? err.message : "Error desconocido");
         }
@@ -60,9 +56,22 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
       setProduccionObjetivo("");
       setOperadorId("");
       setResponsableId("");
+      setClienteId("");
       setError(null);
     }
   }, [isOpen]);
+  const handleProductoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    setProductoId(selectedId);
+
+    // Buscar el producto seleccionado y actualizar clienteId automáticamente
+    const producto = productos.find((p) => String(p.id) === selectedId);
+    if (producto && producto.cliente_id) {
+      setClienteId(String(producto.cliente_id));
+    } else {
+      setClienteId("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,7 +81,8 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
       !productoId ||
       !produccionObjetivo ||
       !operadorId ||
-      !responsableId
+      !responsableId ||
+      !clienteId
     ) {
       setError("Todos los campos son obligatorios.");
       return;
@@ -88,6 +98,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
       produccion_objetivo: parseInt(produccionObjetivo),
       operador_engargolado_id: parseInt(operadorId),
       responsable_linea_id: parseInt(responsableId),
+      cliente_id: parseInt(clienteId),
     };
 
     try {
@@ -170,7 +181,7 @@ const StartProductionModal: React.FC<StartProductionModalProps> = ({
               <select
                 id="producto_id"
                 value={productoId}
-                onChange={(e) => setProductoId(e.target.value)}
+                onChange={handleProductoChange}
                 required
               >
                 <option value="" disabled>
