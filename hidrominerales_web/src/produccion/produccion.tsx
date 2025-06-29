@@ -1,8 +1,10 @@
+// claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-81dcd2cb6692c1863a27d858ea554482df49edab/hidrominerales_web/src/produccion/produccion.tsx
+
 import React, { useState } from "react";
 import Sidebar from "./sidebar";
 import Home from "./Placeholder/Home";
 import CalidadView from "./Placeholder/Calidad";
-import ReportesGen from "./Placeholder/Reportes_gen";
+import InsumosManagement from "./Placeholder/InsumosManagement"; // Importa el nuevo componente
 import "./styles/produccion.css";
 
 export type Seccion = "home" | "calidad" | "Insumos";
@@ -18,7 +20,7 @@ const ProduccionLayout: React.FC = () => {
       case "calidad":
         return <CalidadView selectedLine={selectedLine} />;
       case "Insumos":
-        return <ReportesGen />;
+        return <InsumosManagement selectedLine={selectedLine} />; // Reemplaza el placeholder
 
       default:
         return <Home selectedLine={selectedLine} />;

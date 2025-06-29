@@ -272,3 +272,79 @@ def despachar_producto_terminado():
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Error al despachar los pallets', 'error': str(e)}), 500
+
+
+@api_bp.route('/inventario/materia_prima/disponible', methods=['GET'])
+def get_lotes_disponibles_por_cliente():
+    """
+    Obtiene los lotes de materia prima con stock disponible, filtrados por cliente.
+    Esencial para que producción sepa qué lotes puede consumir.
+    """
+    cliente_id = request.args.get('cliente_id')
+    if not cliente_id:
+        return jsonify({'message': 'El ID del cliente es un parámetro requerido.'}), 400
+        
+    try:
+        lotes_disponibles = db.session.query(InventarioMateriaPrima)\
+            .join(MateriaPrima, InventarioMateriaPrima.materia_prima_id == MateriaPrima.id)\
+            .filter(MateriaPrima.cliente_id == cliente_id)\
+            .filter(InventarioMateriaPrima.cantidad_actual > 0)\
+            .order_by(MateriaPrima.nombre, InventarioMateriaPrima.fecha_recepcion)\
+            .all()
+
+        return jsonify([lote.to_dict() for lote in lotes_disponibles]), 200
+    except Exception as e:
+        return jsonify({'message': 'Error al consultar lotes disponibles', 'error': str(e)}), 500
+
+
+@api_bp.route('/inventario/consumir', methods=['POST'])
+def consumir_materia_prima():
+    """
+    Registra el consumo de un lote de materia prima para un reporte de producción.
+    """
+    data = request.get_json()
+    # En una implementación real, este ID vendría de la sesión/token del usuario.
+    user_id = data.get('user_id', 1) 
+
+    required_fields = ['inventario_mp_id', 'cantidad', 'reporte_id']
+    if not all(field in data for field in required_fields):
+        return jsonify({'message': 'Faltan datos requeridos (inventario_mp_id, cantidad, reporte_id)'}), 400
+
+    try:
+        inventario_id = int(data['inventario_mp_id'])
+        cantidad_consumida = float(data['cantidad'])
+        reporte_id = int(data['reporte_id'])
+
+        if cantidad_consumida <= 0:
+            return jsonify({'message': 'La cantidad consumida debe ser positiva'}), 400
+
+        lote = InventarioMateriaPrima.query.with_for_update().get(inventario_id)
+
+        if not lote:
+            return jsonify({'message': 'El lote de inventario especificado no existe'}), 404
+        
+        if lote.cantidad_actual < cantidad_consumida:
+            return jsonify({
+                'message': f'Stock insuficiente. Intenta consumir {cantidad_consumida}, pero solo hay {lote.cantidad_actual} disponible en el lote {lote.lote_proveedor}.'
+            }), 409
+
+        lote.cantidad_actual -= cantidad_consumida
+
+        movimiento = MovimientoInventario(
+            materia_prima_id=lote.materia_prima_id,
+            user_id=user_id,
+            reporte_id=reporte_id,
+            tipo_movimiento='consumo_produccion',
+            cantidad=cantidad_consumida 
+        )
+        db.session.add(movimiento)
+        db.session.commit()
+
+        return jsonify({'message': 'Consumo registrado exitosamente', 'nuevo_stock': float(lote.cantidad_actual)}), 200
+
+    except (ValueError, TypeError):
+        db.session.rollback()
+        return jsonify({'message': 'Formato de datos inválido.'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Error en el servidor al registrar el consumo', 'error': str(e)}), 500

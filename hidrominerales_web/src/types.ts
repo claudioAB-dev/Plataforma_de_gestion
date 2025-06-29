@@ -93,6 +93,7 @@ export interface InspeccionSelloLateral {
 }
 // Interfaz principal corregida para coincidir con el to_dict() del modelo ReporteProduccion
 export interface ReporteProduccion {
+  cliente_id: ReporteProduccion | null;
   id: number; // Corregido de 'id_reporte'
   turno: number;
   fecha_produccion: string;
@@ -140,6 +141,7 @@ export interface MateriaPrima {
 
 // Interfaz para el inventario de Materia Prima
 export interface InventarioMateriaPrima {
+  materia_prima: any;
   id: number;
   materia_prima_nombre: string;
   cliente_nombre: string;
