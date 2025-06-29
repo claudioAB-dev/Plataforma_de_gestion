@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from sqlalchemy import func
 from . import api_bp
-from ..models import MateriaPrima, MovimientoInventario, db, InventarioMateriaPrima, PalletTerminado, ReporteProduccion, Producto
+from ..models import EstadoPalletEnum, MateriaPrima, MovimientoInventario, db, InventarioMateriaPrima, PalletTerminado, ReporteProduccion, Producto
 from datetime import datetime
 
 @api_bp.route('/inventario/materia_prima', methods=['GET'])
@@ -207,3 +207,68 @@ def get_movimientos_recientes():
         return jsonify([mov.to_dict() for mov in movimientos]), 200
     except Exception as e:
         return jsonify({'message': 'Error al consultar los movimientos recientes', 'error': str(e)}), 500
+    
+
+@api_bp.route('/inventario/producto_terminado/disponible', methods=['GET'])
+def get_inventario_pt_disponible():
+    """
+    Obtiene todos los pallets de producto terminado que están en estado 'Almacenado'.
+    """
+    try:
+        pallets_disponibles = PalletTerminado.query.filter_by(
+            estado=EstadoPalletEnum.ALMACENADO
+        ).join(ReporteProduccion).order_by(ReporteProduccion.fecha_produccion.desc(), PalletTerminado.numero_pallet.desc()).all()
+        
+        return jsonify([pallet.to_dict() for pallet in pallets_disponibles]), 200
+    except Exception as e:
+        return jsonify({'message': 'Error al consultar el inventario disponible', 'error': str(e)}), 500
+
+
+@api_bp.route('/inventario/producto_terminado/despachar', methods=['POST'])
+def despachar_producto_terminado():
+    """
+    Marca una lista de pallets como 'Despachado' y crea los movimientos de inventario correspondientes.
+    Espera un JSON con una lista de IDs de pallet: { "pallet_ids": [1, 2, 3] }
+    """
+    data = request.get_json()
+    user_id = 1  # Placeholder para el ID del usuario logueado
+
+    if not data or 'pallet_ids' not in data or not isinstance(data['pallet_ids'], list):
+        return jsonify({'message': 'Se requiere una lista de IDs de pallet ("pallet_ids")'}), 400
+
+    pallet_ids = data['pallet_ids']
+    if not pallet_ids:
+        return jsonify({'message': 'La lista de pallets no puede estar vacía'}), 400
+
+    try:
+        pallets_a_despachar = PalletTerminado.query.filter(PalletTerminado.id.in_(pallet_ids)).all()
+
+        if len(pallets_a_despachar) != len(pallet_ids):
+            return jsonify({'message': 'Uno o más pallets no fueron encontrados'}), 404
+
+        for pallet in pallets_a_despachar:
+            if pallet.estado != EstadoPalletEnum.ALMACENADO:
+                db.session.rollback()
+                return jsonify({'message': f'El pallet N° {pallet.numero_pallet} no está en estado "Almacenado".'}), 409
+
+            # 1. Actualizar el estado del pallet
+            pallet.estado = EstadoPalletEnum.DESPACHADO
+            pallet.fecha_despacho = datetime.now()
+
+            # 2. Crear el movimiento de salida
+            movimiento = MovimientoInventario(
+                pallet_id=pallet.id,
+                reporte_id=pallet.reporte_id, # Guardamos la referencia al reporte original
+                user_id=user_id,
+                tipo_movimiento='despacho_producto_terminado',
+                cantidad=pallet.cantidad_charolas, # Guardamos la cantidad de charolas como referencia
+                ubicacion_origen_id=pallet.ubicacion_id
+            )
+            db.session.add(movimiento)
+        
+        db.session.commit()
+        return jsonify({'message': f'{len(pallets_a_despachar)} pallets despachados correctamente'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Error al despachar los pallets', 'error': str(e)}), 500

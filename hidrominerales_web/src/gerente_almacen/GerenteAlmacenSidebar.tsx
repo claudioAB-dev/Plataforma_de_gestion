@@ -1,3 +1,4 @@
+// claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-81dcd2cb6692c1863a27d858ea554482df49edab/hidrominerales_web/src/gerente_almacen/GerenteAlmacenSidebar.tsx
 import React from "react";
 import "./styles/GerenteAlmacen.css";
 
@@ -32,6 +33,12 @@ const GerenteAlmacenSidebar: React.FC<SidebarProps> = ({
             onClick={() => setActiveView("ajuste")}
           >
             Ajuste de Inventario
+          </li>
+          <li
+            className={activeView === "despacho" ? "active" : ""}
+            onClick={() => setActiveView("despacho")}
+          >
+            Despacho de Productos
           </li>
         </ul>
       </nav>

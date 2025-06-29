@@ -64,8 +64,11 @@ class TipoMermaEnum(enum.Enum):
     TAPA_CASQUILLO_MUESTREO = 'Tapa/casquillo muestreo'
     BOTELLA_MUESTREO = 'Botella muestreo'
 
-
-# --- Modelos con serialización robustecida ---
+class EstadoPalletEnum(enum.Enum):
+    EN_PRODUCCION = "En Producción"
+    ALMACENADO = "Almacenado"
+    DESPACHADO = "Despachado"
+    EN_CUARENTENA = "En Cuarentena"
 
 class ReporteProduccion(db.Model):
     __tablename__ = 'reportes_produccion'
@@ -123,14 +126,12 @@ class ReporteProduccion(db.Model):
             'producto': self.producto.to_dict() if self.producto else None
         }
 
-        # Si la llamada a la función pide los detalles, los incluimos.
         if include_details:
             data['pallets'] = [p.to_dict() for p in self.pallets]
             data['paros'] = [p.to_dict() for p in self.paros]
             data['mermas'] = [m.to_dict() for m in self.mermas]
             data['controles_calidad'] = [c.to_dict() for c in self.controles_calidad]
             data['inspecciones_sello'] = [i.to_dict() for i in self.inspecciones_sello]
-            # --- FIN DE LA MODIFICACIÓN ---
         return data
 
 class PalletTerminado(db.Model):
@@ -139,10 +140,35 @@ class PalletTerminado(db.Model):
     reporte_id = db.Column(db.Integer, db.ForeignKey('reportes_produccion.id'), nullable=False)
     numero_pallet = db.Column(db.Integer, nullable=False)
     ubicacion_id = db.Column(db.Integer, db.ForeignKey('ubicaciones.id'), nullable=True)
+    estado = db.Column(
+        SQLAlchemyEnum(
+            EstadoPalletEnum,
+            name="estadopalletenum",
+            values_callable=lambda x: [e.value for e in x]
+        ),
+        nullable=False,
+        default=EstadoPalletEnum.EN_PRODUCCION.value,
+        server_default=EstadoPalletEnum.EN_PRODUCCION.value
+    ) 
 
+    fecha_despacho = db.Column(db.DateTime, nullable=True)
     cantidad_charolas = db.Column(db.Integer, nullable=False)
     hora_registro = db.Column(db.Time, nullable=False)
-    def to_dict(self): return {'id': self.id, 'reporte_id': self.reporte_id, 'numero_pallet': self.numero_pallet, 'ubicacion_id': self.ubicacion_id,'cantidad_charolas': self.cantidad_charolas, 'hora_registro': self.hora_registro.strftime('%H:%M:%S') if self.hora_registro else None}
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'reporte_id': self.reporte_id,
+            'numero_pallet': self.numero_pallet,
+            'ubicacion_id': self.ubicacion_id,
+            'cantidad_charolas': self.cantidad_charolas,
+            'hora_registro': self.hora_registro.strftime('%H:%M:%S') if self.hora_registro else None,
+            'estado': self.estado.value if isinstance(self.estado, enum.Enum) else self.estado,
+            'fecha_despacho': self.fecha_despacho.isoformat() if self.fecha_despacho else None,
+            'producto_nombre': self.reporte.producto.nombre if self.reporte and self.reporte.producto else 'N/A',
+            'lote': self.reporte.lote if self.reporte else 'N/A',
+            'fecha_produccion': self.reporte.fecha_produccion.isoformat() if self.reporte and self.reporte.fecha_produccion else None
+
+        }
 
 class ParoLinea(db.Model):
     __tablename__ = 'paros_linea'
@@ -361,11 +387,12 @@ class InventarioMateriaPrima(db.Model):
         return {
             'id': self.id,
             'materia_prima_id': self.materia_prima_id,
+            'materia_prima': self.materia_prima.to_dict(), # <-- AÑADIR ESTO para anidar el objeto
             'materia_prima_nombre': self.materia_prima.nombre,
             'cliente_id': self.materia_prima.cliente_id,
             'cliente_nombre': self.materia_prima.cliente.nombre,
             'ubicacion_id': self.ubicacion_id,
-            'ubicacion_codigo': self.ubicacion.codigo,
+            'ubicacion_codigo': self.ubicacion.codigo if self.ubicacion else None,
             'lote_proveedor': self.lote_proveedor,
             'cantidad_actual': float(self.cantidad_actual),
             'fecha_caducidad': self.fecha_caducidad.isoformat() if self.fecha_caducidad else None

@@ -1,63 +1,79 @@
+// claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-fcc48bb06575d392a80d27919f2a68d8a85432ba/hidrominerales_web/src/admin/components/UserModal.tsx
+
 import React, { useState, useEffect } from "react";
 import type { User, Rol } from "../../types";
-import "../../gerente_produccion/styles/Modal.css";
+import "../styles/UserManagement.css"; // Reutilizamos los estilos que ya tenemos
 
 interface UserModalProps {
+  isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
-  existingUser: User | null;
+  user: User | null; // Renombrado de 'existingUser' a 'user' para consistencia
+  roles: Rol[]; // Recibimos los roles como prop
 }
 
 const UserModal: React.FC<UserModalProps> = ({
+  isOpen,
   onClose,
   onSave,
-  existingUser,
+  user,
+  roles,
 }) => {
+  const [username, setUsername] = useState("");
   const [nombre, setNombre] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [password, setPassword] = useState("");
   const [rolId, setRolId] = useState<string>("");
-  const [roles, setRoles] = useState<Rol[]>([]);
+  const [isActive, setIsActive] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Popula el formulario cuando se abre para editar un usuario existente
   useEffect(() => {
-    // Cargar roles disponibles
-    const fetchRoles = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:5001/api/roles");
-        if (!res.ok) throw new Error("No se pudieron cargar los roles.");
-        setRoles(await res.json());
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Error al cargar roles.");
-      }
-    };
-    fetchRoles();
-
-    if (existingUser) {
-      setNombre(existingUser.nombre);
-      setRolId(String(existingUser.rol_id));
+    if (user) {
+      setUsername(user.nombre);
+      setNombre(user.nombre);
+      setRolId(user.rol_id.toString());
+      //setIsActive(user.is_active);
+      setPassword(""); // Limpiamos el campo de contraseña
+    } else {
+      // Reseteamos el formulario para un nuevo usuario
+      setUsername("");
+      setNombre("");
+      setPassword("");
+      setRolId("");
+      setIsActive(true);
     }
-  }, [existingUser]);
+    setError(null); // Limpiamos errores al abrir/cambiar de usuario
+  }, [user, isOpen]); // Se ejecuta cuando el usuario o la visibilidad del modal cambian
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !rolId || (!existingUser && !contrasena)) {
+    if (!username || !nombre || !rolId || (!user && !password)) {
       setError(
-        "Nombre, rol y contraseña (para usuarios nuevos) son obligatorios."
+        "Username, nombre, rol y contraseña (para usuarios nuevos) son obligatorios."
       );
       return;
     }
     setError(null);
     setIsSubmitting(true);
 
-    const url = existingUser
-      ? `http://127.0.0.1:5001/api/users/${existingUser.id}`
-      : "http://127.0.0.1:5001/api/users";
-    const method = existingUser ? "PUT" : "POST";
+    // Endpoints correctos del API de autenticación
+    const url = user
+      ? `http://127.0.0.1:5001/api/auth/users/${user.id}`
+      : "http://127.0.0.1:5001/api/auth/users";
+    const method = user ? "PUT" : "POST";
 
-    const body: any = { nombre, rol_id: parseInt(rolId) };
-    if (contrasena) {
-      body.contrasena = contrasena;
+    const body: any = {
+      username,
+      nombre,
+      rol_id: parseInt(rolId, 10),
+      is_active: isActive,
+    };
+
+    // Solo incluimos la contraseña en el body si se ha escrito algo
+    if (password) {
+      body.password = password;
     }
 
     try {
@@ -72,7 +88,8 @@ const UserModal: React.FC<UserModalProps> = ({
         throw new Error(errorData.message || "Error al guardar el usuario.");
       }
 
-      onSave();
+      onSave(); // Llama a la función para refrescar los datos en la tabla principal
+      onClose(); // Cierra el modal
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado.");
     } finally {
@@ -80,32 +97,50 @@ const UserModal: React.FC<UserModalProps> = ({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>{existingUser ? "Editar Usuario" : "Crear Nuevo Usuario"}</h2>
-        <form onSubmit={handleSubmit}>
+        <div className="modal-header">
+          <h2>{user ? "Editar Usuario" : "Crear Nuevo Usuario"}</h2>
+          <button onClick={onClose} className="modal-close-btn">
+            &times;
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="modal-body">
           <div className="form-group">
-            <label htmlFor="nombre">Nombre de Usuario</label>
+            <label htmlFor="username">Username (para iniciar sesión)</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="nombre">Nombre Completo</label>
             <input
               id="nombre"
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
-            <label htmlFor="contrasena">Contraseña</label>
+            <label htmlFor="password">Contraseña</label>
             <input
-              id="contrasena"
+              id="password"
               type="password"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
-              placeholder={
-                existingUser ? "Dejar en blanco para no cambiar" : ""
-              }
-              required={!existingUser}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={user ? "Dejar en blanco para no cambiar" : ""}
+              required={!user} // La contraseña es obligatoria solo para usuarios nuevos
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -115,19 +150,30 @@ const UserModal: React.FC<UserModalProps> = ({
               value={rolId}
               onChange={(e) => setRolId(e.target.value)}
               required
+              disabled={isSubmitting}
             >
               <option value="" disabled>
                 Seleccione un rol...
               </option>
               {roles.map((rol) => (
-                <option key={rol.id} value={rol.id}>
+                <option key={rol.id} value={rol.id.toString()}>
                   {rol.nombre}
                 </option>
               ))}
             </select>
           </div>
+          <div className="form-group form-group-checkbox">
+            <label htmlFor="is_active">Usuario Activo</label>
+            <input
+              id="is_active"
+              type="checkbox"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              disabled={isSubmitting}
+            />
+          </div>
           {error && <p className="error-message">{error}</p>}
-          <div className="modal-actions">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onClose}
@@ -136,12 +182,8 @@ const UserModal: React.FC<UserModalProps> = ({
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn-confirm"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Guardando..." : "Guardar Usuario"}
+            <button type="submit" className="btn-save" disabled={isSubmitting}>
+              {isSubmitting ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </form>
