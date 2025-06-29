@@ -141,6 +141,7 @@ export interface MateriaPrima {
 
 // Interfaz para el inventario de Materia Prima
 export interface InventarioMateriaPrima {
+  fecha_recepcion: string | number | Date;
   materia_prima: any;
   id: number;
   materia_prima_nombre: string;

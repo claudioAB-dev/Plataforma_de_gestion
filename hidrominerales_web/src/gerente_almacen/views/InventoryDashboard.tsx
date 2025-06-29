@@ -1,160 +1,176 @@
 import React, { useState, useEffect } from "react";
-import type {
-  InventarioMateriaPrimaConsolidado,
-  InventarioProductoTerminadoConsolidado,
-  MovimientoInventario,
-} from "../../types";
-import "../../gerente_produccion/styles/Reportes.css";
-import "../styles/GerenteAlmacen.css";
-
-const BOTELLAS_POR_CHAROLA = 60;
+// Asegúrate que las rutas de importación sean correctas para tu proyecto
+// Asegúrate que las rutas de importación sean correctas para tu proyecto
+import type { InventarioMateriaPrima } from "../../types";
+import AdjustmentModal from "../components/AdjustmentModal";
 
 const InventoryDashboard: React.FC = () => {
-  const [invMP, setInvMP] = useState<InventarioMateriaPrimaConsolidado[]>([]);
-  const [invPT, setInvPT] = useState<InventarioProductoTerminadoConsolidado[]>(
-    []
-  );
-  const [movimientos, setMovimientos] = useState<MovimientoInventario[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [pallets, setPallets] = useState<InventarioMateriaPrima[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const [mpResponse, ptResponse, movResponse] = await Promise.all([
-          fetch(
-            "http://127.0.0.1:5001/api/inventario/materia_prima/consolidado"
-          ),
-          fetch(
-            "http://127.0.0.1:5001/api/inventario/producto_terminado/consolidado"
-          ),
-          fetch("http://127.0.0.1:5001/api/inventario/movimientos/recientes"),
-        ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPallet, setSelectedPallet] =
+    useState<InventarioMateriaPrima | null>(null);
 
-        if (!mpResponse.ok || !ptResponse.ok || !movResponse.ok) {
-          throw new Error("Error al obtener los datos del dashboard.");
-        }
-
-        setInvMP(await mpResponse.json());
-        setInvPT(await ptResponse.json());
-        setMovimientos(await movResponse.json());
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Error inesperado.");
-      } finally {
-        setIsLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5001/api/inventario/materia_prima/lotes"
+      );
+      if (!response.ok) {
+        throw new Error("Error al cargar el inventario de materia prima.");
       }
-    };
-
-    fetchDashboardData();
-  }, []);
-
-  const formatTipoMovimiento = (tipo: string) => {
-    return tipo.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      const data: InventarioMateriaPrima[] = await response.json();
+      setPallets(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error inesperado.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (isLoading)
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleOpenModal = (pallet: InventarioMateriaPrima) => {
+    setSelectedPallet(pallet);
+    setIsModalOpen(true);
+  };
+
+  // Esta función ahora sirve tanto para cerrar como para ejecutar en caso de éxito,
+  // ya que cierra el modal y recarga los datos.
+  const handleCloseAndRefresh = () => {
+    setIsModalOpen(false);
+    setSelectedPallet(null);
+    fetchData();
+  };
+
+  const summary = pallets.reduce((acc, pallet) => {
+    const name = pallet.materia_prima_nombre;
+    if (!acc[name]) {
+      acc[name] = {
+        count: 0,
+        totalQuantity: 0,
+        unit: pallet.materia_prima.unidad_medida,
+      };
+    }
+    acc[name].count++;
+    acc[name].totalQuantity += pallet.cantidad_actual;
+    return acc;
+  }, {} as Record<string, { count: number; totalQuantity: number; unit: string }>);
+
+  if (loading) {
     return (
       <div className="loading-container">
-        <h2>Cargando Dashboard...</h2>
+        <h2>Cargando Inventario de Pallets...</h2>
       </div>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <div className="reportes-list-container">
         <p style={{ color: "red" }}>{error}</p>
       </div>
     );
+  }
 
   return (
     <div className="reportes-list-container">
+      {/* La renderización del modal ahora se controla con 'isModalOpen'.
+              Cuando 'isModalOpen' es true, el modal se monta en el DOM.
+            */}
+      {isModalOpen && selectedPallet && (
+        <AdjustmentModal
+          // --- INICIO DE LA CORRECCIÓN ---
+          item={selectedPallet} // 1. Se usa 'item' en lugar de 'lote'.
+          onClose={handleCloseAndRefresh} // 2. Se pasa la función para el botón 'Cancelar' o 'X'.
+          onSuccess={handleCloseAndRefresh} // 3. Se pasa la misma función para cuando el ajuste es exitoso.
+          //    Ya no se pasa 'isOpen'.
+          // --- FIN DE LA CORRECCIÓN ---
+        />
+      )}
+
       <div className="ga-header">
-        <h1>Dashboard de Inventario Global</h1>
+        <h1>Dashboard de Inventario por Pallets</h1>
       </div>
 
-      {/* Sección de Movimientos Recientes */}
-      <h3 style={{ marginTop: "2rem" }}>Últimos Movimientos de Inventario</h3>
       <div
-        className="table-responsive"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        className="summary-cards-container"
+        style={{
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+          margin: "1rem 0",
+        }}
       >
+        {Object.keys(summary).length > 0 ? (
+          Object.entries(summary).map(([name, data]) => (
+            <div
+              key={name}
+              className="summary-card"
+              style={{
+                border: "1px solid #ccc",
+                padding: "1rem",
+                borderRadius: "8px",
+                minWidth: "200px",
+              }}
+            >
+              <h3 style={{ marginTop: 0, marginBottom: "0.5rem" }}>{name}</h3>
+              <p>
+                <strong>{data.count}</strong> Pallets en inventario
+              </p>
+              <p>
+                Stock Total:{" "}
+                <strong>
+                  {data.totalQuantity.toLocaleString()} {data.unit}
+                </strong>
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>No hay inventario para mostrar.</p>
+        )}
+      </div>
+
+      <h3 style={{ marginTop: "2rem" }}>Detalle de Pallets en Almacén</h3>
+      <div className="table-responsive">
         <table className="reportes-table">
           <thead>
             <tr>
-              <th>Fecha y Hora</th>
-              <th>Insumo</th>
-              <th>Tipo de Movimiento</th>
-              <th>Cantidad</th>
-              <th>Usuario</th>
+              <th>ID Pallet</th>
+              <th>Materia Prima</th>
+              <th>Lote Proveedor</th>
+              <th>Cantidad en Pallet</th>
+              <th>Ubicación</th>
+              <th>Fecha Recepción</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {movimientos.map((mov) => (
-              <tr key={mov.id}>
-                <td>{new Date(mov.timestamp).toLocaleString()}</td>
-                <td>{mov.materia_prima_nombre}</td>
+            {pallets.map((pallet) => (
+              <tr key={pallet.id}>
+                <td>{pallet.id}</td>
+                <td>{pallet.materia_prima_nombre}</td>
+                <td>{pallet.lote_proveedor}</td>
                 <td>
-                  <span className={`status-badge ${mov.tipo_movimiento}`}>
-                    {formatTipoMovimiento(mov.tipo_movimiento)}
-                  </span>
+                  <strong>{`${pallet.cantidad_actual.toLocaleString()} ${
+                    pallet.materia_prima.unidad_medida
+                  }`}</strong>
                 </td>
-                <td>{mov.cantidad.toLocaleString()}</td>
-                <td>{mov.user_nombre || "N/A"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Tablas Consolidadas */}
-      <h3 style={{ marginTop: "2rem" }}>Resumen de Materia Prima</h3>
-      <div className="table-responsive">
-        <table className="reportes-table">
-          <thead>
-            <tr>
-              <th>Nombre del Insumo</th>
-              <th>SKU</th>
-              <th>Stock Total</th>
-              <th>Unidad de Medida</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invMP.map((item) => (
-              <tr key={item.sku}>
-                <td>{item.nombre}</td>
-                <td>{item.sku}</td>
-                <td>{item.stock_total.toLocaleString()}</td>
-                <td>{item.unidad_medida}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <h3 style={{ marginTop: "2rem" }}>Resumen de Producto Terminado</h3>
-      <div className="table-responsive">
-        <table className="reportes-table">
-          <thead>
-            <tr>
-              <th>Nombre del Producto</th>
-              <th>SKU</th>
-              <th>Pallets Totales</th>
-              <th>Charolas Totales</th>
-              <th>Unidades Totales (Aprox.)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invPT.map((item) => (
-              <tr key={item.sku}>
-                <td>{item.nombre}</td>
-                <td>{item.sku}</td>
-                <td>{item.pallets_totales.toLocaleString()}</td>
-                <td>{item.charolas_totales.toLocaleString()}</td>
+                <td>{pallet.ubicacion_codigo || "N/A"}</td>
+                <td>{new Date(pallet.fecha_recepcion).toLocaleDateString()}</td>
                 <td>
-                  {(
-                    item.charolas_totales * BOTELLAS_POR_CHAROLA
-                  ).toLocaleString()}
+                  <button
+                    className="btn-action btn-merma"
+                    onClick={() => handleOpenModal(pallet)}
+                  >
+                    Ajustar
+                  </button>
                 </td>
               </tr>
             ))}
