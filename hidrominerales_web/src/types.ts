@@ -1,3 +1,5 @@
+export type EstadoSolicitud = "Pendiente" | "Aprobado" | "Rechazado";
+
 // Interfaz para el modelo Rol
 export interface Rol {
   id: number;
@@ -218,4 +220,16 @@ export interface MovimientoInventario {
   cantidad: number;
   timestamp: string;
   // Añadir otros campos del modelo si se necesitaran en el frontend
+}
+export interface SolicitudFalta {
+  id: number;
+  user_id: number;
+  solicitante_nombre: string;
+  fecha_solicitud: string;
+  motivo: string;
+  estado: EstadoSolicitud;
+  revisado_por_nombre: string | null;
+  fecha_revision: string | null;
+  comentario_gerente: string | null;
+  timestamp: string;
 }

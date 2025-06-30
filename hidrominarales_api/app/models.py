@@ -70,6 +70,11 @@ class EstadoPalletEnum(enum.Enum):
     DESPACHADO = "Despachado"
     EN_CUARENTENA = "En Cuarentena"
 
+class EstadoSolicitudEnum(enum.Enum):
+    PENDIENTE = "Pendiente"
+    APROBADO = "Aprobado"
+    RECHAZADO = "Rechazado"
+
 class ReporteProduccion(db.Model):
     __tablename__ = 'reportes_produccion'
     id = db.Column(db.Integer, primary_key=True)
@@ -438,4 +443,44 @@ class MovimientoInventario(db.Model):
             'user_id': self.user_id,
             'user_nombre': self.user.nombre if self.user else None,
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
+        }
+    
+class SolicitudFalta(db.Model):
+    __tablename__ = 'solicitudes_falta'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    fecha_solicitud = db.Column(db.Date, nullable=False)
+    motivo = db.Column(db.Text, nullable=False)
+    # Estado y revisión
+    estado = db.Column(
+        SQLAlchemyEnum(
+            EstadoSolicitudEnum,
+            name="estadosolicitudenum",
+            values_callable=lambda x: [e.value for e in x]
+        ),
+        nullable=False,
+        default=EstadoSolicitudEnum.PENDIENTE.value
+    )
+    
+    revisado_por_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    fecha_revision = db.Column(db.DateTime, nullable=True)
+    comentario_gerente = db.Column(db.Text, nullable=True)
+    
+    timestamp = db.Column(db.TIMESTAMP, server_default=func.now())
+    
+    solicitante = db.relationship('User', foreign_keys=[user_id])
+    revisor = db.relationship('User', foreign_keys=[revisado_por_id])
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'solicitante_nombre': self.solicitante.nombre if self.solicitante else None,
+            'fecha_solicitud': self.fecha_solicitud.isoformat(),
+            'motivo': self.motivo,
+            'estado': self.estado.value if isinstance(self.estado, enum.Enum) else self.estado,
+            'revisado_por_nombre': self.revisor.nombre if self.revisor else None,
+            'fecha_revision': self.fecha_revision.isoformat() if self.fecha_revision else None,
+            'comentario_gerente': self.comentario_gerente,
+            'timestamp': self.timestamp.isoformat()
         }

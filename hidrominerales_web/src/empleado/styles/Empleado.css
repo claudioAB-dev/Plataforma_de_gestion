@@ -1,0 +1,387 @@
+/* CSS Móvil para Componente de Empleados - Solicitudes de Falta */
+
+/* Variables CSS para consistencia */
+:root {
+  --primary-color: #2563eb;
+  --success-color: #16a34a;
+  --warning-color: #f59e0b;
+  --danger-color: #dc2626;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --border-radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset y base móvil */
+* {
+  box-sizing: border-box;
+}
+
+.empleado-container {
+  max-width: 100%;
+  padding: 16px;
+  background-color: var(--gray-50);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Header con círculos de estado */
+.empleado-header {
+  background: white;
+  padding: 24px 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.empleado-header h1 {
+  color: var(--gray-800);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+/* Container de estado con círculos */
+.status-indicator-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.status-circles {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-300);
+  background-color: var(--gray-100);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.status-circle.used {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.status-circle.available {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.status-text {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.status-summary {
+  background: linear-gradient(135deg, var(--gray-100) 0%, white 100%);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+/* Botón principal */
+.btn-new-request {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-new-request:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.btn-new-request:not(:disabled):active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-new-request:disabled {
+  background: var(--gray-300);
+  color: var(--gray-600);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Tarjetas de solicitudes */
+.solicitud-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.solicitud-card:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.solicitud-card.pendiente {
+  border-left-color: var(--warning-color);
+}
+
+.solicitud-card.aprobada {
+  border-left-color: var(--success-color);
+}
+
+.solicitud-card.rechazada {
+  border-left-color: var(--danger-color);
+}
+
+.solicitud-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px 20px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.solicitud-card-header strong {
+  font-size: 16px;
+  color: var(--gray-800);
+  font-weight: 600;
+}
+
+.status-pill {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pill.pendiente {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--warning-color);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-pill.aprobado {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.status-pill.rechazada {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--danger-color);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.solicitud-card-body {
+  padding: 12px 20px 20px 20px;
+}
+
+.solicitud-card-body p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gray-600);
+}
+
+.solicitud-card-body p:last-child {
+  margin-bottom: 0;
+}
+
+.solicitud-card-body .motivo {
+  color: var(--gray-700);
+  font-size: 15px;
+}
+
+/* Modal */
+.modal-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-form-content {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-form-content h2 {
+  color: var(--gray-800);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  padding: 24px 24px 0 24px;
+  text-align: center;
+}
+
+.modal-form-content form {
+  padding: 0 24px 24px 24px;
+}
+
+.modal-form-content label {
+  display: block;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.modal-form-content input,
+.modal-form-content textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+.modal-form-content input:focus,
+.modal-form-content textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.modal-form-content textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-actions button[type="button"] {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
+.form-actions button[type="button"]:active {
+  background: var(--gray-300);
+}
+
+.form-actions button[type="submit"] {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.form-actions button[type="submit"]:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Estados de carga y error */
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 16px;
+}
+
+.error-message {
+  color: var(--danger-color);
+  background: rgba(220, 38, 38, 0.1);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Animaciones */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.solicitud-card {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media (max-width: 320px) {
+  .empleado-container {
+    padding: 12px;
+  }
+
+  .empleado-header {
+    padding: 20px 16px;
+  }
+
+  .empleado-header h1 {
+    font-size: 20px;
+  }
+
+  .btn-new-request {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+
+  .solicitud-card-header,
+  .solicitud-card-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

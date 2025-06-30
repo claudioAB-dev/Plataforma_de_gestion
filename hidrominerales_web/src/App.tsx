@@ -11,6 +11,8 @@ import GerenteAlmacenLayout from "./gerente_almacen/GerenteAlmacenLayout";
 import ErrorBoundary from "./ErrorBoundary";
 import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle";
 import HomePage from "./home/HomePage";
+import EmpleadoLayout from "./empleado/EmpleadoLayout";
+import GerenteEmpleadosLayout from "./gerente_empleados/GerenteEmpleadosLayout";
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -131,6 +133,22 @@ const AppContent: React.FC = () => {
               element={
                 <RoleProtectedRoute allowedRoles={[1, 6, 8]}>
                   <GerenteAlmacenLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/empleado"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8]}>
+                  <EmpleadoLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/gerente-empleados"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 8]}>
+                  <GerenteEmpleadosLayout />
                 </RoleProtectedRoute>
               }
             />

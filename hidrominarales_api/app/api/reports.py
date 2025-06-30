@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
 from . import api_bp
-from ..models import db, User, Rol, Producto, ReporteProduccion, PalletTerminado, ParoLinea, Merma, EstadoProduccionEnum
+from ..models import EstadoPalletEnum, db, User, Rol, Producto, ReporteProduccion, PalletTerminado, ParoLinea, Merma, EstadoProduccionEnum
 from datetime import datetime
 
 @api_bp.route('/reportes', methods=['GET'])
@@ -131,7 +131,11 @@ def update_reporte(id):
         if 'estado' in data and data['estado'] == 'Terminado':
             reporte.estado = 'Terminado'
             reporte.hora_termino = datetime.now().time()
-        
+            
+            for pallet in reporte.pallets:
+                if pallet.estado == EstadoPalletEnum.EN_PRODUCCION:
+                    pallet.estado = EstadoPalletEnum.ALMACENADO
+
         db.session.commit()
         return jsonify(reporte.to_dict()), 200
     except Exception as e:

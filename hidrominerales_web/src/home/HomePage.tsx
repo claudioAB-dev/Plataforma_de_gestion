@@ -49,6 +49,20 @@ const allLinks: NavLink[] = [
     icon: "📦",
     allowedRoles: [1, 2, 6],
   },
+  {
+    path: "/empleado",
+    label: "Portal de Empleado",
+    description: "Solicitar y consultar ausencias justificadas.",
+    icon: "👤",
+    allowedRoles: [1, 2, 3, 4, 5, 6, 7, 8], // Todos pueden acceder
+  },
+  {
+    path: "/gerente-empleados",
+    label: "Gestión de Empleados",
+    description: "Aprobar o rechazar solicitudes de ausencia.",
+    icon: "✅",
+    allowedRoles: [1, 2, 8], // Solo rol de Gerente de Empleados
+  },
 ];
 
 const HomePage: React.FC = () => {

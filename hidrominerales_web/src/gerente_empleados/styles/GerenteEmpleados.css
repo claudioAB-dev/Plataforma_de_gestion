@@ -1,0 +1,30 @@
+.gerente-empleados-container {
+  padding: 2rem;
+}
+.filters {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+/* Reutilizaremos los estilos de tabla de Reportes.css */
+.reportes-table .action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+.reportes-table .btn-approve {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.reportes-table .btn-reject {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
