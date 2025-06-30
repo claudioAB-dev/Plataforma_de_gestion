@@ -1,0 +1,571 @@
+/* Estilos adaptados para Gerente de Empleados */
+/* Reutilizamos las variables CSS del sistema */
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success-color: #10b981;
+  --success-hover: #059669;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+  --warning-color: #f59e0b;
+  --secondary-color: #6b7280;
+  --light-gray: #f8fafc;
+  --medium-gray: #e2e8f0;
+  --dark-gray: #374151;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+
+  /* Colores específicos para gestión de empleados */
+  --employee-primary: #7c3aed;
+  --employee-primary-hover: #6d28d9;
+  --employee-accent: #f59e0b;
+  --employee-accent-hover: #d97706;
+}
+
+/* Layout principal adaptado */
+.admin-layout {
+  display: flex;
+  min-height: calc(100vh - 60px - 40px);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Sidebar específico para empleados */
+.admin-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, var(--white) 0%, #f1f5f9 100%);
+  padding: 24px;
+  border-right: 1px solid var(--medium-gray);
+  height: calc(100vh - 60px - 40px);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow-y: auto;
+}
+
+.admin-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--employee-primary),
+    var(--employee-accent)
+  );
+}
+
+.admin-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-sidebar nav li {
+  padding: 16px 20px;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-sidebar nav li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(
+    135deg,
+    var(--employee-primary),
+    var(--employee-primary-hover)
+  );
+  transition: width 0.3s ease;
+}
+
+.admin-sidebar nav li:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.1),
+    rgba(245, 158, 11, 0.05)
+  );
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-sidebar nav li:hover::before {
+  width: 4px;
+}
+
+.admin-sidebar nav li.active {
+  background: linear-gradient(
+    135deg,
+    var(--employee-primary),
+    var(--employee-primary-hover)
+  );
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(0);
+}
+
+.admin-sidebar nav li.active::before {
+  width: 4px;
+  background: var(--employee-accent);
+}
+
+.admin-sidebar nav li a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.admin-sidebar nav li.active a {
+  color: var(--white);
+}
+
+/* Contenido principal */
+.admin-main-content {
+  flex-grow: 1;
+  padding: 32px;
+  background: var(--white);
+  margin: 16px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-main-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--employee-primary),
+    var(--employee-accent),
+    var(--success-color)
+  );
+}
+
+/* Headers específicos para gestión de empleados */
+.employee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--medium-gray);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.employee-header h2 {
+  color: var(--dark-gray);
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--employee-primary),
+    var(--employee-accent)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+/* Botones específicos para empleados */
+.employee-action-btn {
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(
+    135deg,
+    var(--employee-primary),
+    var(--employee-primary-hover)
+  );
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.employee-action-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.employee-action-btn:hover {
+  background: linear-gradient(135deg, var(--employee-primary-hover), #5b21b6);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.employee-action-btn:hover::before {
+  left: 100%;
+}
+
+.employee-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Botón secundario para empleados */
+.employee-secondary-btn {
+  background: linear-gradient(
+    135deg,
+    var(--employee-accent),
+    var(--employee-accent-hover)
+  );
+}
+
+.employee-secondary-btn:hover {
+  background: linear-gradient(135deg, var(--employee-accent-hover), #b45309);
+}
+
+/* Tablas y listas para gestión de empleados */
+.employee-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  margin-top: 16px;
+}
+
+.employee-table th {
+  background: linear-gradient(135deg, var(--light-gray), #e2e8f0);
+  padding: 20px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--employee-primary);
+  position: relative;
+}
+
+.employee-table th:first-child {
+  border-top-left-radius: var(--border-radius-lg);
+}
+
+.employee-table th:last-child {
+  border-top-right-radius: var(--border-radius-lg);
+}
+
+.employee-table td {
+  padding: 20px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+  transition: background-color 0.2s ease;
+}
+
+.employee-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.employee-table tbody tr:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.02),
+    rgba(245, 158, 11, 0.01)
+  );
+  transform: scale(1.001);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employee-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--border-radius-lg);
+}
+
+.employee-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--border-radius-lg);
+}
+
+/* Estados específicos para solicitudes */
+.solicitud-status {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.solicitud-status.pendiente {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.1),
+    rgba(217, 119, 6, 0.1)
+  );
+  color: var(--employee-accent);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.solicitud-status.aprobada {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.1),
+    rgba(5, 150, 105, 0.1)
+  );
+  color: var(--success-color);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.solicitud-status.rechazada {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(220, 38, 38, 0.1)
+  );
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Cards para móvil */
+.employee-card {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--medium-gray);
+  transition: all 0.3s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.employee-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+.employee-card-title {
+  font-weight: 700;
+  color: var(--employee-primary);
+  font-size: 1.1rem;
+}
+
+.employee-card-content {
+  display: grid;
+  gap: 12px;
+}
+
+.employee-card-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.employee-card-field:last-child {
+  border-bottom: none;
+}
+
+.employee-card-label {
+  font-weight: 600;
+  color: var(--employee-primary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.employee-card-value {
+  color: var(--dark-gray);
+  font-size: 0.95rem;
+}
+
+/* Estados de carga y error */
+.employee-loading,
+.employee-error {
+  text-align: center;
+  padding: 32px;
+  border-radius: var(--border-radius-lg);
+  margin: 24px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.employee-loading {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.1),
+    rgba(245, 158, 11, 0.05)
+  );
+  color: var(--employee-primary);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.employee-error {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(220, 38, 38, 0.05)
+  );
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 260px;
+  }
+
+  .admin-main-content {
+    padding: 24px;
+    margin: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+    background: var(--light-gray);
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--medium-gray);
+    margin-bottom: 8px;
+    border-radius: var(--border-radius-lg);
+  }
+
+  .admin-main-content {
+    margin: 8px;
+    padding: 20px;
+  }
+
+  .employee-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .employee-header h2 {
+    text-align: center;
+    font-size: 1.75rem;
+  }
+
+  .employee-action-btn {
+    width: 100%;
+  }
+
+  /* Convertir tablas en cards en móvil */
+  .employee-table {
+    border: none;
+    box-shadow: none;
+  }
+
+  .employee-table thead {
+    display: none;
+  }
+
+  .employee-table,
+  .employee-table tbody,
+  .employee-table tr,
+  .employee-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .employee-table tr {
+    margin-bottom: 20px;
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--medium-gray);
+    transition: all 0.3s ease;
+  }
+
+  .employee-table tr:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .employee-table td {
+    border: none;
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .employee-table td:last-child {
+    border-bottom: none;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .employee-table td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--employee-primary);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-main-content {
+    margin: 4px;
+    padding: 16px;
+  }
+
+  .employee-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .employee-card {
+    padding: 16px;
+  }
+}

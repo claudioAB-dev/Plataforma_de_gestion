@@ -55,6 +55,12 @@ const RegisterConsumptionModal: React.FC<RegisterConsumptionModalProps> = ({
         }
       );
       const data = await response.json();
+      console.log({
+        inventario_mp_id: itemToConsume.id,
+        cantidad: consumedAmount,
+        reporte_id: reporteId,
+        user_id: userId,
+      });
       if (!response.ok) {
         throw new Error(data.message || "Error al registrar el consumo.");
       }

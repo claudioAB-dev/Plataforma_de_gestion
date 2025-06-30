@@ -10,6 +10,7 @@ export interface Rol {
 
 // Actualizamos la interfaz de User para que sea más completa
 export interface User {
+  is_active: boolean;
   id: number;
   nombre: string;
   rol_id: number;
@@ -232,4 +233,12 @@ export interface SolicitudFalta {
   fecha_revision: string | null;
   comentario_gerente: string | null;
   timestamp: string;
+}
+export interface Anuncio {
+  id: number;
+  titulo: string;
+  contenido: string;
+  autor_nombre: string;
+  timestamp: string;
+  fecha_expiracion: string | null;
 }

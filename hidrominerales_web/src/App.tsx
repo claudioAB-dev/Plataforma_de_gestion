@@ -13,6 +13,7 @@ import ReporteDetalle from "./gerente_produccion/views/ReporteDetalle";
 import HomePage from "./home/HomePage";
 import EmpleadoLayout from "./empleado/EmpleadoLayout";
 import GerenteEmpleadosLayout from "./gerente_empleados/GerenteEmpleadosLayout";
+import AnunciosLayout from "./anuncios/AnunciosLayout";
 
 const UnauthorizedPage: React.FC = () => {
   const { logout } = useAuth();
@@ -82,7 +83,7 @@ const AppContent: React.FC = () => {
             <Route
               path="/"
               element={
-                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8]}>
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8, 9]}>
                   <HomePage />
                 </RoleProtectedRoute>
               }
@@ -139,16 +140,24 @@ const AppContent: React.FC = () => {
             <Route
               path="/empleado"
               element={
-                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8]}>
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8, 9]}>
                   <EmpleadoLayout />
                 </RoleProtectedRoute>
               }
             />
             <Route
-              path="/gerente-empleados"
+              path="/gerente-empleados/*"
               element={
                 <RoleProtectedRoute allowedRoles={[1, 2, 8]}>
                   <GerenteEmpleadosLayout />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/anuncios"
+              element={
+                <RoleProtectedRoute allowedRoles={[1, 2, 3, 4, 5, 6, 7, 8, 9]}>
+                  <AnunciosLayout />
                 </RoleProtectedRoute>
               }
             />

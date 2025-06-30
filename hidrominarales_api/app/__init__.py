@@ -25,7 +25,7 @@ def create_app():
     # 2. IMPORTANTE: Ahora, importa aquí los módulos que contienen las rutas.
     #    Al hacer esto, Python ejecuta esos archivos (reports.py, etc.), y las rutas
     #    definidas en ellos se asocian con el objeto 'api_bp' que ya existe.
-    from .api import reports, auth, products, lines, calidad, clientes, materias_primas, inventario, empleados
+    from .api import reports, auth, products, lines, calidad, clientes, materias_primas, inventario, empleados, comunicaciones
 
     # 3. Finalmente, registra el blueprint (que ahora ya tiene todas las rutas asociadas) en la aplicación.
     app.register_blueprint(api_bp, url_prefix='/api')

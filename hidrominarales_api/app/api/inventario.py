@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from sqlalchemy import func
+from decimal import Decimal
 from . import api_bp
 from ..models import EstadoPalletEnum, MateriaPrima, MovimientoInventario, db, InventarioMateriaPrima, PalletTerminado, ReporteProduccion, Producto
 from datetime import datetime
@@ -97,32 +98,30 @@ def get_lotes_materia_prima():
 
 
 
-
 @api_bp.route('/inventario/materia_prima/registrar_recepcion', methods=['POST'])
 def registrar_recepcion_mp():
-    """
-    Registra la llegada (recepción) de un lote de materia prima usando FormData.
-    """
     data = request.form
-    user_id = 1  # Placeholder
+    user_id = 1
 
     required_fields = ['materia_prima_id', 'cantidad', 'lote_proveedor']
     if not all(field in data and data[field] for field in required_fields):
         return jsonify({'message': f"Faltan datos requeridos o están vacíos: {', '.join(required_fields)}"}), 400
 
     try:
-        cantidad = float(data['cantidad'])
-        ubicacion_id_final = int(data['ubicacion_id']) if data.get('ubicacion_id') else 1,
+        # --- PASO 2: Usar Decimal en lugar de float ---
+        cantidad = Decimal(data['cantidad'])
+        ubicacion_id_final = int(data['ubicacion_id']) if data.get('ubicacion_id') else 1
 
         if cantidad <= 0:
             return jsonify({'message': 'La cantidad debe ser positiva'}), 400
+        
         nuevo_lote = InventarioMateriaPrima(
             materia_prima_id=int(data['materia_prima_id']),
-            cantidad_actual=cantidad,
+            cantidad_actual=cantidad, # ya es Decimal
             lote_proveedor=data['lote_proveedor'],
-            fecha_recepcion=datetime.now().date(),  # Esto ahora funcionará
+            fecha_recepcion=datetime.now().date(),
             fecha_caducidad=datetime.strptime(data['fecha_caducidad'], '%Y-%m-%d').date() if data.get('fecha_caducidad') else None,
-            ubicacion_id=ubicacion_id_final # Se usa la nueva variable aquí
+            ubicacion_id=ubicacion_id_final
         )
         db.session.add(nuevo_lote)
 
@@ -141,25 +140,21 @@ def registrar_recepcion_mp():
         return jsonify({'message': 'Formato de datos inválido'}), 400
     except Exception as e:
         db.session.rollback()
-        import traceback
-        traceback.print_exc()
         return jsonify({'message': 'Error al registrar la recepción', 'error': str(e)}), 500
 
 
 @api_bp.route('/inventario/materia_prima/ajustar', methods=['POST'])
 def ajustar_inventario_mp():
-    """
-    Ajusta el stock de un lote específico de materia prima y registra el movimiento.
-    """
-    data = request.form
-    user_id = 1 # Placeholder
+    data = request.get_json()
+    user_id = 1
 
     required_fields = ['inventario_mp_id', 'nueva_cantidad_fisica', 'motivo']
-    if not all(field in data and data[field] for field in required_fields):
+    if not data or not all(field in data and data[field] for field in required_fields):
         return jsonify({'message': f"Faltan datos requeridos o están vacíos: {', '.join(required_fields)}"}), 400
 
     try:
-        nueva_cantidad = float(data['nueva_cantidad_fisica'])
+        # --- PASO 2: Usar Decimal en lugar de float ---
+        nueva_cantidad = Decimal(str(data['nueva_cantidad_fisica']))
         if nueva_cantidad < 0:
             return jsonify({'message': 'La cantidad no puede ser negativa'}), 400
 
@@ -173,7 +168,7 @@ def ajustar_inventario_mp():
         if ajuste == 0:
             return jsonify({'message': 'No se realizó ningún ajuste'}), 200
 
-        lote_a_ajustar.cantidad_actual = nueva_cantidad
+        lote_a_ajustar.cantidad_actual = nueva_cantidad # Asignando un Decimal a un Decimal
 
         movimiento = MovimientoInventario(
             materia_prima_id=lote_a_ajustar.materia_prima_id,
@@ -190,9 +185,9 @@ def ajustar_inventario_mp():
         return jsonify({'message': 'Formato de datos inválido'}), 400
     except Exception as e:
         db.session.rollback()
-        import traceback
-        traceback.print_exc()
         return jsonify({'message': 'Error al realizar el ajuste', 'error': str(e)}), 500
+
+
 
     
 @api_bp.route('/inventario/movimientos/recientes', methods=['GET'])
@@ -296,23 +291,19 @@ def get_lotes_disponibles_por_cliente():
     except Exception as e:
         return jsonify({'message': 'Error al consultar lotes disponibles', 'error': str(e)}), 500
 
-
 @api_bp.route('/inventario/consumir', methods=['POST'])
 def consumir_materia_prima():
-    """
-    Registra el consumo de un lote de materia prima para un reporte de producción.
-    """
     data = request.get_json()
-    # En una implementación real, este ID vendría de la sesión/token del usuario.
-    user_id = data.get('user_id', 1) 
+    user_id = data.get('user_id', 1)
 
     required_fields = ['inventario_mp_id', 'cantidad', 'reporte_id']
-    if not all(field in data for field in required_fields):
+    if not data or not all(field in data for field in required_fields):
         return jsonify({'message': 'Faltan datos requeridos (inventario_mp_id, cantidad, reporte_id)'}), 400
 
     try:
         inventario_id = int(data['inventario_mp_id'])
-        cantidad_consumida = float(data['cantidad'])
+        # --- PASO 2: Usar Decimal. Convertimos a string primero por seguridad ---
+        cantidad_consumida = Decimal(str(data['cantidad']))
         reporte_id = int(data['reporte_id'])
 
         if cantidad_consumida <= 0:
@@ -328,6 +319,7 @@ def consumir_materia_prima():
                 'message': f'Stock insuficiente. Intenta consumir {cantidad_consumida}, pero solo hay {lote.cantidad_actual} disponible en el lote {lote.lote_proveedor}.'
             }), 409
 
+        # --- Ahora esta operación es válida (Decimal -= Decimal) ---
         lote.cantidad_actual -= cantidad_consumida
 
         movimiento = MovimientoInventario(
@@ -340,9 +332,10 @@ def consumir_materia_prima():
         db.session.add(movimiento)
         db.session.commit()
 
+        # Convertimos de nuevo a float solo para la respuesta JSON, que es una práctica común
         return jsonify({'message': 'Consumo registrado exitosamente', 'nuevo_stock': float(lote.cantidad_actual)}), 200
 
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as e:
         db.session.rollback()
         return jsonify({'message': 'Formato de datos inválido.'}), 400
     except Exception as e:

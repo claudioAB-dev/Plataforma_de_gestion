@@ -54,14 +54,21 @@ const allLinks: NavLink[] = [
     label: "Portal de Empleado",
     description: "Solicitar y consultar ausencias justificadas.",
     icon: "👤",
-    allowedRoles: [1, 2, 3, 4, 5, 6, 7, 8], // Todos pueden acceder
+    allowedRoles: [1, 2, 3, 4, 5, 6, 7, 8, 9], // Todos pueden acceder
   },
   {
     path: "/gerente-empleados",
     label: "Gestión de Empleados",
-    description: "Aprobar o rechazar solicitudes de ausencia.",
+    description: "Aprobar solicitudes y publicar anuncios.", // Descripción actualizada
     icon: "✅",
-    allowedRoles: [1, 2, 8], // Solo rol de Gerente de Empleados
+    allowedRoles: [1, 2, 8],
+  },
+  {
+    path: "/anuncios",
+    label: "Tablón de Anuncios",
+    description: "Ver las últimas noticias y comunicados de la empresa.",
+    icon: "📢",
+    allowedRoles: [1, 2, 3, 4, 5, 6, 7, 8, 9], // Para todos
   },
 ];
 

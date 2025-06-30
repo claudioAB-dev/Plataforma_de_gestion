@@ -484,3 +484,29 @@ class SolicitudFalta(db.Model):
             'comentario_gerente': self.comentario_gerente,
             'timestamp': self.timestamp.isoformat()
         }
+    
+class Anuncio(db.Model):
+    __tablename__ = 'anuncios'
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(255), nullable=False)
+    contenido = db.Column(db.Text, nullable=False)
+    
+    # Quién publicó el anuncio
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    # Fechas de control
+    timestamp = db.Column(db.DateTime, server_default=func.now())
+    fecha_expiracion = db.Column(db.Date, nullable=True) # Opcional: para que los anuncios se oculten solos
+
+    # Relación
+    autor = db.relationship('User', backref='anuncios')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'titulo': self.titulo,
+            'contenido': self.contenido,
+            'autor_nombre': self.autor.nombre if self.autor else 'Desconocido',
+            'timestamp': self.timestamp.isoformat(),
+            'fecha_expiracion': self.fecha_expiracion.isoformat() if self.fecha_expiracion else None
+        }
