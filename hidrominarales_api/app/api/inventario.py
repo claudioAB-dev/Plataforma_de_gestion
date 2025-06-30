@@ -4,7 +4,6 @@ from decimal import Decimal
 from . import api_bp
 from ..models import EstadoPalletEnum, MateriaPrima, MovimientoInventario, db, InventarioMateriaPrima, PalletTerminado, ReporteProduccion, Producto
 from datetime import datetime
-
 @api_bp.route('/inventario/materia_prima', methods=['GET'])
 def get_inventario_materia_prima():
     """Consulta el inventario de materia prima por cliente."""
@@ -13,11 +12,18 @@ def get_inventario_materia_prima():
         return jsonify({'message': 'El ID del cliente es requerido'}), 400
 
     try:
-        inventario = db.session.query(InventarioMateriaPrima).join(MateriaPrima).filter(MateriaPrima.cliente_id == cliente_id).all()
+        # MODIFICADO: Se añade la condición para filtrar cantidades mayores a cero.
+        # Las condiciones dentro de .filter() se encadenan con un AND.
+        inventario = db.session.query(InventarioMateriaPrima)\
+            .join(MateriaPrima)\
+            .filter(
+                MateriaPrima.cliente_id == cliente_id,
+                InventarioMateriaPrima.cantidad_actual > 0
+            ).all()
+            
         return jsonify([item.to_dict() for item in inventario]), 200
     except Exception as e:
         return jsonify({'message': 'Error al consultar el inventario', 'error': str(e)}), 500
-
 
 @api_bp.route('/inventario/producto_terminado', methods=['GET'])
 def get_inventario_producto_terminado():

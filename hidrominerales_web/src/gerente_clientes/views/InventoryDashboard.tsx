@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
+// claudioab-dev/plataforma_de_gestion/Plataforma_de_gestion-3e46265e7fafc836dd130dae17e6176f5643f542/hidrominerales_web/src/gerente_clientes/views/InventoryDashboard.tsx
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import type {
   Cliente,
   InventarioMateriaPrima,
   PalletTerminado,
 } from "../../types";
+// Importamos los nuevos estilos
 import "../styles/InventoryDashboard.css";
+// Reutilizamos la tabla base
+import "../../gerente_produccion/styles/Reportes.css";
 
 const InventoryDashboard: React.FC = () => {
   const [clients, setClients] = useState<Cliente[]>([]);
@@ -43,11 +48,8 @@ const InventoryDashboard: React.FC = () => {
 
     setIsLoadingInventory(true);
     setError(null);
-    setInventoryMP([]);
-    setInventoryPT([]);
 
     try {
-      // Hacemos las dos llamadas a la API de forma concurrente
       const [mpResponse, ptResponse] = await Promise.all([
         fetch(
           `${
@@ -81,76 +83,130 @@ const InventoryDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchInventories(selectedClient);
+    if (selectedClient) {
+      fetchInventories(selectedClient);
+    }
   }, [selectedClient, fetchInventories]);
 
+  // NUEVO: Hook useMemo para calcular las tarjetas de resumen eficientemente
+  const summaryStats = useMemo(() => {
+    const totalPallets = inventoryPT.length;
+    const totalCharolas = inventoryPT.reduce(
+      (sum, item) => sum + (item.cantidad_charolas || 0),
+      0
+    );
+    const uniqueRawMaterials = new Set(
+      inventoryMP.map((item) => item.materia_prima_nombre)
+    ).size;
+    return { totalPallets, totalCharolas, uniqueRawMaterials };
+  }, [inventoryMP, inventoryPT]);
+
+  // NUEVO: Función para determinar el estado de un lote y aplicar una clase CSS
+  const getLotStatus = (item: InventarioMateriaPrima): string => {
+    if (item.fecha_caducidad) {
+      const BORDER_DAYS = 15;
+      const expiryDate = new Date(item.fecha_caducidad);
+      const today = new Date();
+      const diffTime = expiryDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) return "expired";
+      if (diffDays <= BORDER_DAYS) return "expiring-soon";
+    }
+    // Suponiendo que 'stock_minimo_alerta' está en materia_prima
+    if (
+      item.cantidad_actual <= (item.materia_prima?.stock_minimo_alerta || 0)
+    ) {
+      return "low-stock";
+    }
+    return "";
+  };
+
   return (
-    <div className="reportes-list-container">
-      <div className="pm-header">
-        <h1>Dashboard de Inventario</h1>
-      </div>
-
-      <div className="filters-bar">
-        <label htmlFor="client-selector">
-          Seleccione un Cliente para ver su Inventario:
-        </label>
-        <select
-          id="client-selector"
-          value={selectedClient}
-          onChange={(e) => setSelectedClient(e.target.value)}
-          disabled={isLoadingClients}
-        >
-          <option value="" disabled>
-            {isLoadingClients
-              ? "Cargando clientes..."
-              : "-- Elija un Cliente --"}
-          </option>
-          {clients.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nombre}
+    <div className="inventory-dashboard-container">
+      <div className="inventory-header">
+        <h1>Dashboard de Inventario por Cliente</h1>
+        <div className="client-selector-wrapper">
+          <select
+            id="client-selector"
+            value={selectedClient}
+            onChange={(e) => setSelectedClient(e.target.value)}
+            disabled={isLoadingClients}
+          >
+            <option value="" disabled>
+              {isLoadingClients ? "Cargando..." : "📂 Elija un Cliente"}
             </option>
-          ))}
-        </select>
+            {clients.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {error && (
-        <p className="error-message" style={{ margin: "1rem" }}>
-          Error: {error}
-        </p>
-      )}
+      {error && <div className="inventory-error">Error: {error}</div>}
 
-      {selectedClient &&
-        (isLoadingInventory ? (
-          <p style={{ textAlign: "center", padding: "2rem" }}>
-            Cargando inventario...
+      {!selectedClient ? (
+        <div className="inventory-prompt">
+          <span className="prompt-icon">☝️</span>
+          <h2>Seleccione un cliente</h2>
+          <p>
+            Elija un cliente del menú superior para visualizar su inventario.
           </p>
-        ) : (
-          <>
-            <h3 className="inventory-subtitle">Inventario de Materia Prima</h3>
+        </div>
+      ) : isLoadingInventory ? (
+        <div className="inventory-loading">
+          <div className="spinner"></div>
+          <p>Cargando datos del inventario...</p>
+        </div>
+      ) : (
+        <>
+          {/* NUEVO: Tarjetas de resumen */}
+          <div className="summary-cards-grid">
+            <div className="summary-card">
+              <span className="card-icon">📦</span>
+              <div className="card-value">
+                {summaryStats.uniqueRawMaterials}
+              </div>
+              <div className="card-label">Insumos Diferentes</div>
+            </div>
+            <div className="summary-card">
+              <span className="card-icon">🏭</span>
+              <div className="card-value">{summaryStats.totalPallets}</div>
+              <div className="card-label">Pallets Prod. Terminado</div>
+            </div>
+            <div className="summary-card">
+              <span className="card-icon">📋</span>
+              <div className="card-value">
+                {summaryStats.totalCharolas.toLocaleString()}
+              </div>
+              <div className="card-label">Charolas Totales</div>
+            </div>
+          </div>
+
+          {/* Tablas con mejoras visuales */}
+          <div className="inventory-section">
+            <h3>Materia Prima</h3>
             <div className="table-responsive">
               <table className="reportes-table">
-                <thead>
-                  <tr>
-                    <th>Insumo</th>
-                    <th>Lote Proveedor</th>
-                    <th>Cantidad</th>
-                    <th>Ubicación</th>
-                    <th>Caducidad</th>
-                  </tr>
-                </thead>
+                {/* ... */}
                 <tbody>
                   {inventoryMP.length > 0 ? (
                     inventoryMP.map((item) => (
-                      <tr key={item.id}>
+                      <tr key={item.id} className={getLotStatus(item)}>
                         <td>{item.materia_prima_nombre}</td>
                         <td>{item.lote_proveedor}</td>
-                        <td>{`${item.cantidad_actual} ${item.unidad_medida}`}</td>
+                        <td>{`${item.cantidad_actual.toLocaleString()} ${
+                          item.unidad_medida
+                        }`}</td>
                         <td>{item.ubicacion_codigo || "N/A"}</td>
                         <td>
                           {item.fecha_caducidad
-                            ? new Date(
-                                item.fecha_caducidad
-                              ).toLocaleDateString()
+                            ? new Date(item.fecha_caducidad).toLocaleDateString(
+                                "es-MX",
+                                { timeZone: "UTC" }
+                              )
                             : "N/A"}
                         </td>
                       </tr>
@@ -165,24 +221,22 @@ const InventoryDashboard: React.FC = () => {
                 </tbody>
               </table>
             </div>
+          </div>
 
-            <h3 className="inventory-subtitle">
-              Inventario de Producto Terminado
-            </h3>
+          <div className="inventory-section">
+            <h3>Producto Terminado</h3>
             <div className="table-responsive">
               <table className="reportes-table">
-                <thead>
-                  <tr>
-                    <th>Pallet</th>
-                    <th>Hora Registro</th>
-                    <th>Cantidad (Charolas)</th>
-                  </tr>
-                </thead>
+                {/* ... */}
                 <tbody>
                   {inventoryPT.length > 0 ? (
                     inventoryPT.map((item) => (
                       <tr key={item.id}>
                         <td>{`Pallet #${item.numero_pallet}`}</td>
+                        <td>
+                          {item.producto_nombre ||
+                            `Reporte #${item.reporte_id}`}
+                        </td>
                         <td>{item.hora_registro}</td>
                         <td>{item.cantidad_charolas}</td>
                       </tr>
@@ -197,8 +251,9 @@ const InventoryDashboard: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </>
-        ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
